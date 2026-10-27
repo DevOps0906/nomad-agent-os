@@ -1,0 +1,4 @@
+# Windows에서 체크아웃해도 스크립트가 CRLF로 바뀌어 깨지지 않게
+* text=auto eol=lf
+*.png binary
+*.svg text eol=lf

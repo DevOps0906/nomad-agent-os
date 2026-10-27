@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# _py — 파이썬 도구 공통 실행기. Windows(python.org 설치본에 python3 없음 · Microsoft Store 스텁 · cp949 콘솔)에서도
+#        실제로 동작하는 파이썬을 골라 UTF-8 모드로 실행한다.   사용: _py <도구이름> [인자...]
+DIR="$(cd "$(dirname "$0")" && pwd)"
+TOOL="$1"; shift
+PY=""
+for c in python3 python py; do
+  if command -v "$c" >/dev/null 2>&1; then
+    if [ "$c" = py ]; then "$c" -3 -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" >/dev/null 2>&1 && PY="py -3"
+    else "$c" -c "import sys; sys.exit(0 if sys.version_info >= (3, 8) else 1)" >/dev/null 2>&1 && PY="$c"; fi
+  fi
+  [ -n "$PY" ] && break
+done
+if [ -z "$PY" ]; then
+  [ "$TOOL" = readguard ] && exit 0          # 훅은 파이썬이 없어도 작업을 막지 않는다
+  echo "❌ Python 3.8+ 를 찾지 못했습니다 (Windows: python.org 설치 후 'App execution aliases'에서 python3 스텁 끄기)" >&2; exit 1
+fi
+export PYTHONUTF8=1 PYTHONIOENCODING=utf-8
+exec $PY "$DIR/py/$TOOL.py" "$@"

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+# plan-scaffold — 기획 문서 뼈대를 한 번에 만든다 (모델 토큰 0). 이미 있는 파일은 건드리지 않는다.
+#   사용: plan-scaffold [docs 폴더=docs] [--name "제품명"]
+# 결과: 00_LEAN · 01_PRD · 02_ARCHITECTURE · 03_SCREENS_UX · 04_API · 05_DATA_MODEL · adr/ · diagrams/
+# 그다음 팀장은 목차와 결정만 쓰고, 본문은 planner가 섹션 단위로 채운다.
+set -u
+DOCS="docs"; NAME="<제품명>"
+while [ $# -gt 0 ]; do case "$1" in --name) shift; NAME="$1" ;; *) DOCS="$1" ;; esac; shift; done
+TPL="${NOMAD_HOME:-$HOME/.claude}/skills/plan-docs/templates"
+[ -d "$TPL" ] || TPL="$(cd "$(dirname "$0")/../../skills/plan-docs/templates" 2>/dev/null && pwd)"
+mkdir -p "$DOCS/adr" "$DOCS/diagrams"
+made=0
+put() { # put <파일> <내용>
+  if [ -e "$1" ]; then echo "  · 유지  $1"; else printf '%s\n' "$2" >"$1"; echo "  + 생성  $1"; made=$((made+1)); fi
+}
+fromtpl() { # 템플릿의 <제품명> 치환 — sed 대신 bash 치환이라 이름에 / & 가 있어도 안전
+  if [ -f "$TPL/$2" ]; then local c; c="$(cat "$TPL/$2")"; c="${c//<제품\/기능명>/"$NAME"}"; c="${c//<제품명>/"$NAME"}"; put "$1" "$c"
+  else put "$1" "# $1"; fi
+}
+echo "■ plan-scaffold → $DOCS ($NAME)"
+fromtpl "$DOCS/00_LEAN.md" lean.md
+fromtpl "$DOCS/01_PRD.md" prd.md
+put "$DOCS/02_ARCHITECTURE.md" "# 02 아키텍처 — $NAME
+
+> 그림: [\`diagrams/architecture.mmd\`](diagrams/architecture.mmd) — 코드가 생기면 \`deps2mmd\`로 다시 생성
+
+## 1. 구성 요소
+| 요소 | 책임 | 기술 | 소유 경로 |
+|---|---|---|---|
+
+## 2. 경계 규칙 (누가 누구를 부르나)
+| 호출자 | 대상 | 방법 | 금지 |
+|---|---|---|---|
+
+## 3. 주요 흐름
+- 흐름 1: [\`diagrams/flow-1.mmd\`](diagrams/flow-1.mmd)"
+put "$DOCS/03_SCREENS_UX.md" "# 03 화면·UX — $NAME
+
+| ID | 화면 | 주된 일 | 상태(빈·로딩·오류) | 모바일 ~767 | 태블릿 768~1199 | 데스크톱 1200~ |
+|---|---|---|---|---|---|---|"
+put "$DOCS/04_API.md" "# 04 API — $NAME
+
+| ID | 메서드 | 경로 | 입력 | 출력 | 권한 | 오류 |
+|---|---|---|---|---|---|---|"
+put "$DOCS/05_DATA_MODEL.md" "# 05 데이터 모델 — $NAME
+
+> ERD: [\`diagrams/erd.mmd\`](diagrams/erd.mmd) — \`sql2erd supabase/migrations -o docs/diagrams/erd.mmd\` 로 생성(손으로 그리지 않음)
+
+| 테이블 | 목적 | 주요 컬럼 | RLS 기준 | 비고 |
+|---|---|---|---|---|"
+fromtpl "$DOCS/adr/0000-template.md" adr.md
+put "$DOCS/diagrams/architecture.mmd" 'flowchart LR
+  user["사용자"] --> web["웹 (Next.js)"]
+  web --> api["API (FastAPI)"]
+  web --> db[("Supabase")]
+  api --> db
+  api --> llm["LLM 제공자"]'
+echo "■ 새로 만든 파일 $made개. 다음: 팀장이 00_LEAN 표를 채우고 /plan 진행"

@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# q — 조용한 실행: 긴 출력 명령을 돌리고 "실패 줄 + 꼬리 + 종료 코드"만 보여 준다.
+#   사용: q <명령...>          예) q pnpm test   q flutter analyze
+#   환경: Q_TAIL(꼬리 줄 수, 기본 15)  Q_MATCH(실패 줄 최대, 기본 30)  Q_LOGDIR(기본 .nomad/logs)
+# 전체 로그는 파일로 남기므로 필요할 때만 Read 하면 된다(토큰 절약 핵심).
+set -u
+if [ $# -eq 0 ]; then echo "사용: q <명령...>"; exit 2; fi
+TAIL=${Q_TAIL:-15}; MAXM=${Q_MATCH:-30}; DIR=${Q_LOGDIR:-.nomad/logs}
+mkdir -p "$DIR" 2>/dev/null || DIR=${TMPDIR:-/tmp}
+LOG="$DIR/$(date +%Y%m%d-%H%M%S)-$(echo "$1" | tr -c 'A-Za-z0-9_-' '_' | cut -c1-20).log"
+START=$(date +%s)
+"$@" >"$LOG" 2>&1
+CODE=$?
+SEC=$(( $(date +%s) - START ))
+LINES=$(wc -l <"$LOG" | tr -d ' ')
+PAT='(error|fail|failed|failing|exception|traceback|panic|fatal|✗|✘|cannot|not found|undefined|warning: unused|ERR!|E[0-9]{3,4}\b)'
+if [ "$CODE" -eq 0 ]; then
+  echo "✅ 통과 (exit 0, ${SEC}s, 출력 ${LINES}줄) — 로그: $LOG"
+  # 통과해도 요약 줄(테스트 수 등)은 보여 준다
+  grep -iE '(passed|tests?|suites?|✓|ok|done|compiled|built|no issues)' "$LOG" | tail -n 3
+else
+  echo "❌ 실패 (exit $CODE, ${SEC}s, 출력 ${LINES}줄) — 전체 로그: $LOG"
+  echo "── 문제 줄 (최대 $MAXM) ──"
+  # "0 errors" 처럼 0건만 말하는 줄은 빼고, "10 failed, 0 errors" 처럼 실패가 1건 이상이면 남긴다
+  grep -nE -i "$PAT" "$LOG" | awk '{ l=tolower($0)
+    zero = (l ~ /(^|[^0-9])0 (errors?|failed|failures|warnings?)/)
+    pos  = (l ~ /(^|[^0-9])[1-9][0-9]* (errors?|failed|failures)/) || (l ~ /(error|exception|traceback|panic|fatal|fail)[^a-z ]/)
+    if (zero && !pos) next; if (!seen[$0]++) print }' | head -n "$MAXM"
+  echo "── 마지막 $TAIL줄 ──"
+  tail -n "$TAIL" "$LOG"
+fi
+exit "$CODE"

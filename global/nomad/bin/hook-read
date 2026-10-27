@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# hook-read — Claude Code 훅에서 readguard 를 부르는 래퍼.
+# 안전 규칙: readguard 가 "의도적으로 차단"(exit 2)한 경우만 2를 돌려주고, 그 밖의 모든 실패는 0(통과)으로 바꾼다.
+DIR="$(cd "$(dirname "$0")" && pwd)"
+[ -f "$DIR/_py" ] && [ -f "$DIR/py/readguard.py" ] || exit 0
+OUT=$(bash "$DIR/_py" readguard "$@" 2>&1 >/dev/null)
+CODE=$?
+if [ "$CODE" -eq 2 ] && [ "${OUT#\[readguard\]}" != "$OUT" ]; then printf '%s\n' "$OUT" >&2; exit 2; fi
+exit 0

@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+# codemap — 파일을 통째로 읽기 전에 "구조 지도"를 본다 (파일 · export · 함수/클래스 시그니처).
+#   사용: codemap [폴더=.] [--tree] [--max N]
+#   --tree : 폴더 트리만 (문서용)     --max : 파일당 최대 심볼 수(기본 12)
+#   출력은 최대 400줄(CODEMAP_LIMIT) — 넘으면 하위 폴더를 지정해 다시 본다
+# 파일 하나 통독(수천 토큰) 대신 시그니처(수십 토큰)로 위치를 정한 뒤 필요한 부분만 Read 한다.
+set -u
+ROOT="."; TREE=0; MAX=12; LIMIT=${CODEMAP_LIMIT:-400}
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --tree) TREE=1 ;;
+    --max) shift; MAX="$1" ;;
+    *) ROOT="$1" ;;
+  esac; shift
+done
+EXCL='node_modules|\.next|\.git|dist|build|\.dart_tool|\.venv|venv|__pycache__|coverage|\.turbo|\.nomad|ios/Pods|android/\.gradle'
+list_files() {
+  if command -v rg >/dev/null 2>&1; then rg --files "$ROOT" 2>/dev/null
+  elif git -C "$ROOT" rev-parse >/dev/null 2>&1; then git -C "$ROOT" ls-files | sed "s|^|$ROOT/|"
+  else find "$ROOT" -type f; fi | tr '\\' '/' | grep -vE "/($EXCL)/" | sort
+}
+if [ "$TREE" -eq 1 ]; then
+  list_files | sed "s|^$ROOT/||" | awk -F/ '{p=""; for(i=1;i<NF;i++){p=p $i "/"; if(!s[p]++){printf "%*s%s/\n",(i-1)*2,"",$i}} printf "%*s%s\n",(NF-1)*2,"",$NF}' | head -n 400
+  exit 0
+fi
+{ list_files | grep -E '\.(ts|tsx|js|jsx|mjs|py|dart|sql|go|rs|java|kt)$' | while read -r f; do
+  case "$f" in
+    *.ts|*.tsx|*.js|*.jsx|*.mjs) P='^\s*export\s+(default\s+)?(async\s+)?(function|const|class|type|interface|enum)\s+[A-Za-z0-9_]+|^\s*export\s+default\s+' ;;
+    *.py)   P='^(async\s+)?def\s+[A-Za-z0-9_]+|^class\s+[A-Za-z0-9_]+|^@(router|app)\.(get|post|put|patch|delete)' ;;
+    *.dart) P='^(abstract\s+|sealed\s+|final\s+)?(class|mixin|enum|extension)\s+[A-Za-z0-9_]+|^[A-Za-z<>?, ]+\s+[a-z][A-Za-z0-9_]*\(.*\)\s*(async\s*)?\{' ;;
+    *.sql)  P='(?i)^\s*create\s+(or\s+replace\s+)?(table|function|view|policy|type|index|trigger)\s+' ;;
+    *.go)   P='^func\s+|^type\s+[A-Za-z0-9_]+\s+(struct|interface)' ;;
+    *.rs)   P='^\s*pub\s+(fn|struct|enum|trait)\s+' ;;
+    *.java|*.kt) P='^\s*(public\s+)?(class|interface|enum|fun|record)\s+|^\s*public\s+[A-Za-z<>\[\], ]+\s+[a-z][A-Za-z0-9_]*\(' ;;
+  esac
+  if [ "${f##*.}" = "sql" ]; then SYM=$(grep -iE '^\s*create\s+(or\s+replace\s+)?(table|function|view|policy|type|index|trigger)\s+' "$f" 2>/dev/null)
+  else SYM=$(grep -E "$P" "$f" 2>/dev/null); fi
+  N=$(wc -l <"$f" | tr -d ' ')
+  if [ -n "$SYM" ]; then
+    echo "$f ($N줄)"
+    echo "$SYM" | sed -E 's/\s*\{\s*$//; s/^\s+//' | cut -c1-110 | head -n "$MAX" | sed 's/^/  · /'
+  else
+    echo "$f ($N줄)"
+  fi
+done ; } | awk -v L="$LIMIT" 'NR<=L{print} NR==L+1{print "… (출력 " L "줄에서 자름 — 하위 폴더를 지정해 다시 실행)"; exit}'

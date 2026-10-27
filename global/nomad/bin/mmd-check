@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# mmd-check — Mermaid(.mmd) 문법 검증 + SVG 렌더링 (오픈소스 @mermaid-js/mermaid-cli).
+#   사용: mmd-check <파일.mmd...> [--png]
+# 렌더링을 모델이 아니라 도구가 하게 해서, "그림을 다시 그려줘" 왕복을 없앤다.
+set -u
+[ $# -eq 0 ] && { echo "사용: mmd-check <파일.mmd...> [--png]"; exit 2; }
+EXT=svg; FILES=()
+for x in "$@"; do [ "$x" = "--png" ] && EXT=png || FILES+=("$x"); done
+if command -v mmdc >/dev/null 2>&1; then MMDC=(mmdc)
+elif command -v npx >/dev/null 2>&1; then MMDC=(npx -y @mermaid-js/mermaid-cli@11)
+else echo "⚠️ mmdc/npx 없음 — 'npm i -g @mermaid-js/mermaid-cli' 후 다시 실행 (문법 미검증)"; exit 3; fi
+FAIL=0
+for f in "${FILES[@]}"; do
+  out="${f%.*}.$EXT"
+  if msg=$("${MMDC[@]}" -q -i "$f" -o "$out" 2>&1); then
+    echo "✅ $f → $out"
+  else
+    FAIL=1; echo "❌ $f"; echo "$msg" | grep -vE '^\s*at |node_modules' | head -n 8
+  fi
+done
+exit $FAIL
