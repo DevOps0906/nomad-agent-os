@@ -23,6 +23,7 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 
 | 모듈 (`add` 이름) | 레포 · 위치 | 버전 | 상태 | 내용 |
 |---|---|---|---|---|
+| `contracts` | blueprints-module · `contracts/` | 0.1.0 | ✅ 사용 가능 | 공통 계약 정본 — EVENTS · JOBS · ACCESS · CONVENTIONS. 다른 모듈의 `requires` (함께 가져와야 문서 링크가 열림) |
 | `funnel` | blueprints-module · `funnel/` | 0.1.0 | ✅ 사용 가능 | 퍼널 마케팅 — 화면 12 · 흐름 5 · API 11 · 테이블 16 · 전용 필수 구조 |
 | `secure-pack` | secure-pack-module · `/` | 0.0.1 | 🟡 뼈대 | 구조 계획만 — OpenChain · 정책 · VEX · SPDX · CRA · 공공 제출 순서로 채울 예정 |
 | `docker` | docker-module · `/` | 0.0.1 | 🟡 뼈대 | 구조 계획만 — api · worker · stt-whisper · ocr-paddle · embeddings · clamav. NOMAD 도구가 docker 유형을 지원한 뒤 채움 |
