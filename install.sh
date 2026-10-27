@@ -2,6 +2,7 @@
 # NOMAD Agent OS 설치 (macOS · Linux · Windows Git Bash)
 #   bash install.sh                 전역 설치 (~/.claude) — 모든 프로젝트에서 같은 팀 사용
 #   nomad-os init <프로젝트> [--name 이름]  전역 설치 뒤에는 어디서든 이 명령으로 (저장소 위치 몰라도 됨)
+#   nomad-os module list | add <이름> [프로젝트] | update <이름|all> | remove <이름>   외부 레포 모듈(청사진·보안 팩)
 #   bash install.sh init <프로젝트> [--name 이름]  프로젝트에 AGENTS.md · CLAUDE.md · rules · tasks · Codex·Gemini 설정 적용(기존 파일 보존·병합)
 #                                    이름 생략 시 폴더명. NOMAD 저장소 안의 경로는 거부
 #   옵션: --no-path (PATH 등록 안 함)  --codex (ChatGPT Codex 전역 ~/.codex/AGENTS.md에 CORE 추가)
@@ -52,6 +53,11 @@ append_line() { # append_line <파일> <줄> : 마지막 줄바꿈을 보장하�
   [ -s "$1" ] && [ "$(tail -c1 "$1" | od -An -c | tr -d ' ')" != '\n' ] && printf '\n' >> "$1"
   printf '%s\n' "$2" >> "$1"; return 0
 }
+
+# 모듈: 기획 청사진·보안 팩을 외부 레포에서 필요할 때 가져온다 (내용은 이 저장소에 두지 않음)
+if [ "${1:-}" = "module" ]; then
+  shift; exec bash "$SRC/global/nomad/bin/_py" modules "$@"
+fi
 
 if [ "${1:-}" = "init" ]; then
   shift; P="."; NAME=""
@@ -117,6 +123,7 @@ copy_dir "$SRC/global/skills" "$CL/skills"
 copy_dir "$SRC/global/commands" "$CL/commands"
 copy_dir "$SRC/global/nomad" "$CL/nomad"
 cp "$SRC/docs/ARCHITECTURE.md" "$CL/nomad/ARCHITECTURE.md"
+cp "$SRC/modules.json" "$CL/nomad/modules.json"   # 모듈 등록 목록 (내 레포는 modules.local.json 에 추가)
 # nomad-os: 이 저장소 위치를 기억하는 실행기 → 어디서든 `nomad-os init <경로>` · `nomad-os`(재설치)
 printf '%s\n' '#!/usr/bin/env bash' "# nomad-os — NOMAD 설치기 실행 (설치 때 생성. 저장소: $SRC)" \
   "exec bash \"$SRC/install.sh\" \"\$@\"" > "$CL/nomad/bin/nomad-os"

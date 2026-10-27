@@ -29,9 +29,13 @@ if (-not $bash) {
 
 # init 의 프로젝트 경로는 절대경로 + 슬래시로 바꿔 넘긴다 (D:\work\a → D:/work/a)
 $fwd = @(); $isInit = $args.Count -gt 0 -and $args[0] -eq 'init'
+$isModule = $args.Count -gt 0 -and $args[0] -eq 'module'   # module <cmd> <이름> [프로젝트] [--from 경로]
 for ($i = 0; $i -lt $args.Count; $i++) {
   $a = [string]$args[$i]
-  if ($isInit -and $i -gt 0 -and $args[$i - 1] -ne '--name' -and -not $a.StartsWith('--')) {
+  $prev = if ($i -gt 0) { [string]$args[$i - 1] } else { '' }
+  $isPath = ($isInit -and $i -gt 0 -and $prev -ne '--name' -and -not $a.StartsWith('--')) -or
+            ($isModule -and (($i -ge 3 -and -not $a.StartsWith('--') -and $prev -ne '--ref') -or $prev -eq '--from') -and $a -notmatch '^(https?|ssh)://|^git@')
+  if ($isPath) {
     $a = $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($a).Replace('\', '/')
   }
   $fwd += $a
@@ -41,7 +45,7 @@ $env:PYTHONUTF8 = '1'; $env:PYTHONIOENCODING = 'utf-8'
 $sh = (Join-Path $PSScriptRoot 'install.sh').Replace('\', '/')
 & $bash $sh @fwd
 $code = $LASTEXITCODE
-if ($code -ne 0 -or $isInit) { [Console]::OutputEncoding = $prevOut; exit $code }
+if ($code -ne 0 -or $isInit -or $isModule) { [Console]::OutputEncoding = $prevOut; exit $code }
 
 # 전역 설치 후: PowerShell·cmd 용 래퍼 (~/.claude/nomad/bin-win/<도구>.cmd → Git Bash로 실행)
 $bin = Join-Path $HOME '.claude\nomad\bin'

@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# nomad-module — nomad-os module 과 같음 (설치기 위치를 몰라도 되게)
+exec bash "$(cd "$(dirname "$0")" && pwd)/_py" modules "$@"
