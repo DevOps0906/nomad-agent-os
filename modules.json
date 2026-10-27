@@ -67,6 +67,47 @@
       "type": "blueprint",
       "category": "foundation",
       "desc": "결제(토스페이먼츠·정기결제·환불·이벤트 계약)"
+    },
+    "files-storage": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "files-storage",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "foundation",
+      "desc": "파일(업로드·검사·공유·버전·접근 제어)"
+    },
+    "stt-voice": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "stt-voice",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "ai",
+      "desc": "음성 받아쓰기(whisper 자체 호스팅·화자·요약)"
+    },
+    "rag-chat": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "rag-chat",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "ai",
+      "desc": "문서 질의응답(pgvector·출처·권한 필터)"
+    },
+    "ocr-docs": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "ocr-docs",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "ai",
+      "desc": "문서 인식(PaddleOCR·필드 추출·마스킹)"
+    },
+    "docker": {
+      "repo": "https://github.com/DevOps0906/nomad-docker-module.git",
+      "path": ".",
+      "ref": "master",
+      "type": "docker",
+      "category": "infra",
+      "status": "planned",
+      "desc": "컨테이너 실행 템플릿(api·worker·whisper·PaddleOCR·임베딩·ClamAV, compose profiles) — 뼈대"
     }
   }
 }

@@ -19,11 +19,13 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 |---|---|---|---|
 | [nomad-blueprints-module](https://github.com/DevOps0906/nomad-blueprints-module) | 도메인 기획 청사진 — 모듈마다 폴더 하나 | `main` | 비공개 |
 | [nomad-secure-pack-module](https://github.com/DevOps0906/nomad-secure-pack-module) | 보안 L3 (납품 · 규제) | `main` | 비공개 |
+| [nomad-docker-module](https://github.com/DevOps0906/nomad-docker-module) | 컨테이너 실행 템플릿 (실행 파일 포함) | `master` | 비공개 |
 
 | 모듈 (`add` 이름) | 레포 · 위치 | 버전 | 상태 | 내용 |
 |---|---|---|---|---|
 | `funnel` | blueprints-module · `funnel/` | 0.1.0 | ✅ 사용 가능 | 퍼널 마케팅 — 화면 12 · 흐름 5 · API 11 · 테이블 16 · 전용 필수 구조 |
 | `secure-pack` | secure-pack-module · `/` | 0.0.1 | 🟡 뼈대 | 구조 계획만 — OpenChain · 정책 · VEX · SPDX · CRA · 공공 제출 순서로 채울 예정 |
+| `docker` | docker-module · `/` | 0.0.1 | 🟡 뼈대 | 구조 계획만 — api · worker · stt-whisper · ocr-paddle · embeddings · clamav. NOMAD 도구가 docker 유형을 지원한 뒤 채움 |
 | `crm` | blueprints-module · `crm/` | 0.1.0 | ✅ 사용 가능 | CRM — 화면 14 · 흐름 5 · API 14 · 테이블 14 · funnel 리드 전환 연결 |
 | `erp` | blueprints-module · `erp/` | 0.1.0 | ✅ 사용 가능 | ERP — 화면 19 · 흐름 6 · API 20 · 테이블 21 · 하위 영역은 화면 ID 구간 |
 | `lms` | blueprints-module · `lms/` | 0.1.0 | ✅ 사용 가능 | LMS — 화면 16 · 흐름 6 · API 17 · 테이블 16 · 결제는 payments 이벤트 계약 |
@@ -31,6 +33,10 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 | `admin-audit` | blueprints-module · `admin-audit/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 관리 콘솔·감사 — 화면 11 · 흐름 4 · API 10 · 테이블 8 |
 | `notify` | blueprints-module · `notify/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 알림 — 화면 9 · 흐름 5 · API 13 · 테이블 11 |
 | `payments` | blueprints-module · `payments/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 결제(토스) — 화면 12 · 흐름 5 · API 14 · 테이블 12 |
+| `files-storage` | blueprints-module · `files-storage/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 파일 — 화면 9 · 흐름 5 · API 13 · 테이블 8 |
+| `stt-voice` | blueprints-module · `stt-voice/` | 0.1.0 | ✅ 사용 가능 | AI · 음성 받아쓰기(whisper) · AI 작업 계약 정본 — 화면 10 · 흐름 5 · API 13 · 테이블 11 |
+| `rag-chat` | blueprints-module · `rag-chat/` | 0.1.0 | ✅ 사용 가능 | AI · 문서 질의응답 — 화면 9 · 흐름 5 · API 13 · 테이블 11 |
+| `ocr-docs` | blueprints-module · `ocr-docs/` | 0.1.0 | ✅ 사용 가능 | AI · 문서 인식 — 화면 8 · 흐름 4 · API 11 · 테이블 8 |
 
 - **비공개 레포**라서 GitHub에 로그인된 PC(Git Credential Manager · `gh auth login`)에서만 가져올 수 있습니다.
 - **넣는 기준:** 도메인 기획 청사진은 모두 blueprints-module, 보안 납품·규제 자료는 secure-pack-module. 공개 범위나 관리 주체가 다를 때만 레포를 따로 만듭니다.
