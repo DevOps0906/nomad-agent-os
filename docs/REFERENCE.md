@@ -20,6 +20,7 @@ Claude Code에서 입력합니다.
 | `/design` | 디자인 토큰 → 반응형 폰트 → 미리보기 |
 | `/diagram 무엇` | 구조도 · 흐름도 · 시퀀스 · ERD |
 | `/check` | 린트 · 타입 · 테스트를 돌리고 실패만 요약 |
+| `/agent-check` · `/agent-check fix` | 멀티에이전트 구성 점검: 전역 설치 · 프로젝트 적용 · 템플릿 미작성 · 규칙 경로 · 팀원 이름 충돌 · 모듈 · 사양 최신 · 보안 · 준비물 · 토큰 → 안전한 것은 자동 구성 |
 | `/token-audit` | 항상 읽히는 설정의 토큰 측정 |
 | `/oss 지시` | 단순 작업을 로컬 LLM(Ollama 등)에 맡김 |
 | `/secure` · `/secure setup [--ci]` | 보안 점검(SBOM · 취약점 · 라이선스) / Dependabot · SECURITY.md · CI SBOM 생성 → [보안 가이드](SECURITY.md) |
@@ -63,6 +64,7 @@ Claude Code에서 `/agents`로 확인합니다. 팀장이 알아서 나눠 맡�
 | `spec` | 화면 · 흐름 · API · 테이블 하나만 (기획 문서 대신) | `spec S-03` · `spec changed` |
 | `shot` | 375 · 768 · 1280 · 1440 스크린샷 (Chrome · Edge, 설치 불필요) | `shot design/wireframes` · `shot http://localhost:3000` |
 | `nomad-module` | `nomad-os module`과 같음 | `nomad-module list` |
+| `nomad-doctor` | `/agent-check`의 점검 스크립트 | `nomad-doctor .` · `nomad-doctor . --fix` |
 
 `readguard` · `hook-read`는 Claude Code가 자동으로 쓰는 훅이라 직접 실행하지 않습니다.
 
@@ -111,7 +113,7 @@ flowchart LR
   subgraph HOME["~/.claude (전역 · 모든 프로젝트 공유)"]
     HA["agents/ 팀 10명"]
     HS["skills/ 9개"]
-    HC["commands/ 8개"]
+    HC["commands/ 9개"]
     HN["nomad/ 규칙 + bin 도구"]
     HM["CLAUDE.md 맨 위에 @nomad/TEAM.md"]
     HJ["settings.json 에 읽기 훅 병합"]
@@ -191,6 +193,7 @@ nomad-agent-os/
 │   │   ├── check.md              #   /check: 린트 · 타입 · 테스트 실행, 실패만 요약
 │   │   ├── token-audit.md        #   /token-audit: 상시 로드 토큰 측정 + 줄일 곳 제안
 │   │   ├── oss.md                #   /oss: 단순 텍스트 작업을 로컬 LLM(Ollama 등)에 위임
+│   │   ├── agent-check.md        #   /agent-check: 멀티에이전트 구성 점검 · 자동 구성 (nomad-doctor)
 │   │   └── secure.md             #   /secure: 보안 점검 · setup(Dependabot · SECURITY.md · CI SBOM)
 │   ├── skills/                   # 스킬 — 필요할 때만 로드되는 절차 · 규약
 │   │   ├── plan-docs/            #   기획 문서 절차
@@ -229,6 +232,7 @@ nomad-agent-os/
 │               ├── sql2erd.py    #       SQL 마이그레이션 → Mermaid ERD
 │               ├── plan2spec.py  #       화면 표 → spec.json · 구조도 · 와이어프레임 · 필수 구조 검사 · spec 조회
 │               ├── shot.py       #       Chrome·Edge 헤드리스 3구간 스크린샷
+│               ├── doctor.py     #       /agent-check 점검 · --fix (전역 재설치 · init · plan2spec)
 │               ├── modules.py    #       외부 레포 모듈 가져오기 (커밋 고정 · 허용 확장자 · 수정 보존)
 │               ├── secscan.py    #       lockfile → CycloneDX SBOM · OSV 취약점(+KEV·EPSS) · 라이선스 정책 · setup
 │               └── token-audit.py#       상시 로드 컨텍스트 토큰 추정 · 예산 초과 경고

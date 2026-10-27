@@ -78,6 +78,7 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | `/design` | 디자인 토큰 + 미리보기 |
 | `/diagram 결제 흐름` | 구조도 · 흐름도 · ERD |
 | `/check` | 린트 · 테스트 실패만 요약 |
+| `/agent-check` | 멀티에이전트 구성 점검 · 자동 구성 (`/agent-check fix`) |
 | `/secure` | 보안 점검 — SBOM · 취약점(먼저 고칠 3가지) · 라이선스 |
 | `plan2spec` · `spec S-03` | 기획 표 → 구조도 · 흐름도 · 화면별 시안 · 필수 구조 검사 / 화면 하나만 15줄 |
 | `nomad-os module add funnel .` | 도메인 청사진(Funnel · CRM · ERP · LMS)을 외부 레포에서 가져오기 |
