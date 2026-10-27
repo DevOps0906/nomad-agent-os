@@ -1,0 +1,136 @@
+{
+  "_doc": "화면 유형별 필수(must)·권장(should) 요소. plan2spec 이 03_SCREENS_UX 의 '유형'·'구성'과 대조한다. any: 이 중 하나면 충족. 'type~정규식' = 그 블록의 라벨이 정규식과 맞을 때.",
+  "states_all": ["로딩", "오류"],
+  "types": {
+    "dashboard": {
+      "name": "대시보드",
+      "states": ["빈", "로딩", "오류"],
+      "must": [
+        {"id": "kpi", "label": "핵심 지표 요약(KPI 3~6개)", "any": ["stat"]},
+        {"id": "period", "label": "기간 선택", "any": ["daterange", "filter~기간|날짜|period|date|월|주"]},
+        {"id": "viz", "label": "추세 차트 또는 표", "any": ["chart", "table"]},
+        {"id": "updated", "label": "마지막 갱신 시각", "any": ["updated", "text~갱신|업데이트|updated"]},
+        {"id": "drill", "label": "상세로 들어가기(드릴다운)", "next": true}
+      ],
+      "should": [
+        {"id": "compare", "label": "이전 기간 대비(증감)", "any": ["stat~대비|증감|vs|전월|전주", "compare"]},
+        {"id": "export", "label": "내보내기(CSV·PDF)", "any": ["export", "button~내보내기|다운로드|export|csv"]},
+        {"id": "segment", "label": "세그먼트·담당자 필터", "any": ["filter"]},
+        {"id": "action", "label": "할 일·알림(지표가 행동으로 이어지게)", "any": ["list~할 일|알림|todo|task|alert", "alert"]}
+      ]
+    },
+    "list": {
+      "name": "목록",
+      "states": ["빈", "로딩", "오류"],
+      "must": [
+        {"id": "search", "label": "검색", "any": ["search"]},
+        {"id": "filter", "label": "필터", "any": ["filter"]},
+        {"id": "items", "label": "표 또는 목록", "any": ["table", "list", "card", "board"]},
+        {"id": "paging", "label": "페이지·더 보기", "any": ["pagination", "loadmore"]},
+        {"id": "open", "label": "항목 → 상세 이동", "next": true}
+      ],
+      "should": [
+        {"id": "sort", "label": "정렬", "any": ["sort", "table"]},
+        {"id": "create", "label": "새로 만들기", "any": ["button~추가|새|등록|만들기|create|new|add"]},
+        {"id": "bulk", "label": "일괄 작업(선택·삭제·내보내기)", "any": ["bulk", "button~일괄|선택|bulk"]},
+        {"id": "view", "label": "저장된 보기·열 설정", "any": ["view", "tabs"]}
+      ]
+    },
+    "detail": {
+      "name": "상세",
+      "states": ["로딩", "오류"],
+      "must": [
+        {"id": "title", "label": "제목·상태 표시", "any": ["header", "title", "badge"]},
+        {"id": "back", "label": "뒤로·경로(breadcrumb)", "any": ["breadcrumb", "back", "header"]},
+        {"id": "primary", "label": "주요 작업 버튼", "any": ["button"]},
+        {"id": "fields", "label": "핵심 정보", "any": ["fields", "card", "text", "table"]}
+      ],
+      "should": [
+        {"id": "related", "label": "관련 항목 탭", "any": ["tabs"]},
+        {"id": "activity", "label": "활동·변경 이력", "any": ["activity", "list~이력|활동|history|log|timeline"]},
+        {"id": "notfound", "label": "없는 항목(404) 처리", "state": "오류"}
+      ]
+    },
+    "form": {
+      "name": "입력 폼",
+      "states": ["로딩", "오류", "성공"],
+      "must": [
+        {"id": "fields", "label": "라벨 있는 입력", "any": ["form"]},
+        {"id": "submit", "label": "제출 버튼", "any": ["button"]},
+        {"id": "cancel", "label": "취소·뒤로", "any": ["button~취소|뒤로|cancel|back", "link", "back"]}
+      ],
+      "should": [
+        {"id": "required", "label": "필수 표시·도움말", "any": ["form~\\*|필수|required"]},
+        {"id": "draft", "label": "임시 저장(긴 폼)", "any": ["button~임시|draft", "autosave"]}
+      ]
+    },
+    "board": {
+      "name": "보드(칸반·파이프라인)",
+      "states": ["빈", "로딩", "오류"],
+      "must": [
+        {"id": "columns", "label": "단계별 열", "any": ["board"]},
+        {"id": "move", "label": "단계 이동(끌기 또는 버튼)", "any": ["board", "button~이동|move"]},
+        {"id": "filter", "label": "담당자·기간 필터", "any": ["filter"]},
+        {"id": "open", "label": "카드 → 상세", "next": true}
+      ],
+      "should": [
+        {"id": "sum", "label": "열마다 건수·금액 합계", "any": ["stat", "board~합계|금액|sum"]}
+      ]
+    },
+    "wizard": {
+      "name": "단계 진행(온보딩·마법사)",
+      "states": ["로딩", "오류", "성공"],
+      "must": [
+        {"id": "steps", "label": "단계 표시", "any": ["steps"]},
+        {"id": "nav", "label": "이전·다음", "any": ["button~이전|다음|next|back"]},
+        {"id": "form", "label": "단계별 입력", "any": ["form"]}
+      ],
+      "should": [
+        {"id": "resume", "label": "중간 저장·이어하기", "any": ["button~저장|나중|save", "autosave"]}
+      ]
+    },
+    "settings": {
+      "name": "설정",
+      "states": ["로딩", "오류", "성공"],
+      "must": [
+        {"id": "sections", "label": "구역(탭·사이드 메뉴)", "any": ["tabs", "sidebar", "nav"]},
+        {"id": "form", "label": "설정 입력", "any": ["form"]},
+        {"id": "save", "label": "저장·저장됨 표시", "any": ["button~저장|save"]}
+      ],
+      "should": [
+        {"id": "danger", "label": "위험 작업 구역(삭제·탈퇴) 분리·확인", "any": ["danger", "modal", "button~삭제|탈퇴|delete"]}
+      ]
+    },
+    "auth": {
+      "name": "로그인·가입",
+      "states": ["로딩", "오류"],
+      "must": [
+        {"id": "form", "label": "입력", "any": ["form", "button~google|kakao|naver|소셜|sso"]},
+        {"id": "submit", "label": "로그인·가입 버튼", "any": ["button"]},
+        {"id": "alt", "label": "가입·로그인·비밀번호 찾기 링크", "any": ["link"]}
+      ],
+      "should": [
+        {"id": "legal", "label": "약관·개인정보 링크", "any": ["link~약관|개인정보|terms|privacy", "footer"]}
+      ]
+    },
+    "landing": {
+      "name": "랜딩",
+      "states": [],
+      "must": [
+        {"id": "hero", "label": "가치 제안(히어로)", "any": ["hero"]},
+        {"id": "cta", "label": "행동 버튼(CTA)", "any": ["button", "cta"]},
+        {"id": "footer", "label": "푸터(약관·개인정보·사업자 정보)", "any": ["footer"]}
+      ],
+      "should": [
+        {"id": "proof", "label": "근거(사례·수치·후기 — 실제만)", "any": ["proof", "card~사례|후기|고객", "stat"]},
+        {"id": "pricing", "label": "가격", "any": ["pricing", "card~가격|요금|플랜|price"]},
+        {"id": "faq", "label": "자주 묻는 질문", "any": ["faq"]}
+      ]
+    }
+  },
+  "aliases": {
+    "대시보드": "dashboard", "목록": "list", "리스트": "list", "상세": "detail", "폼": "form", "입력": "form",
+    "보드": "board", "칸반": "board", "파이프라인": "board", "마법사": "wizard", "온보딩": "wizard",
+    "설정": "settings", "로그인": "auth", "가입": "auth", "인증": "auth", "랜딩": "landing"
+  }
+}

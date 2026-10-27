@@ -26,6 +26,7 @@ STARTER = """/* tokens.css — 디자인 시스템 정답 소스 (Tailwind CSS v
   --color-text: #15171a;
   --color-text-muted: #5b6270;
   --color-border: #e3e6eb;
+  --color-input: #858d9b;      /* 입력창·체크박스 경계 — 배경 대비 3:1 이상 (WCAG 1.4.11) */
   --color-primary: #2f5bea;
   --color-primary-fg: #ffffff;
   --color-success: #1f9d55;
@@ -63,6 +64,7 @@ STARTER = """/* tokens.css — 디자인 시스템 정답 소스 (Tailwind CSS v
   --color-text: #eef0f3;
   --color-text-muted: #9aa2ae;
   --color-border: #2a2f37;
+  --color-input: #666e7c;
   --color-primary: #6d8cff;
   --color-primary-fg: #0f1114;
 }
@@ -189,13 +191,118 @@ input.err{{border-color:var(--color-danger,#d64545)}}
     if g["text"] and missing:
         print(f"⚠️ 반응형 값이 없는 글자 토큰: {', '.join(missing)} — 3구간 폰트 크기를 지정하세요")
 
+# ---------- 대비 검사 (WCAG 2.x) ----------
+def _resolve(v, toks, depth=0):
+    m = re.fullmatch(r"\s*var\(\s*(--[\w-]+)\s*(?:,\s*([^)]+))?\)\s*", v or "")
+    if m and depth < 8:
+        return _resolve(toks.get(m.group(1), m.group(2) or ""), toks, depth + 1)
+    return (v or "").strip()
+
+def to_linear_rgb(v):
+    """CSS 색 → 선형 sRGB (0~1) 튜플. hex · rgb() · oklch() 지원, 그 밖은 None."""
+    v = v.strip().lower()
+    def lin(c):
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    m = re.fullmatch(r"#([0-9a-f]{3,8})", v)
+    if m:
+        h = m.group(1)
+        if len(h) in (3, 4): h = "".join(ch * 2 for ch in h[:3])
+        return tuple(lin(int(h[i:i + 2], 16) / 255) for i in (0, 2, 4))
+    m = re.fullmatch(r"rgba?\(\s*([\d.]+%?)[\s,]+([\d.]+%?)[\s,]+([\d.]+%?).*\)", v)
+    if m:
+        return tuple(lin((float(x[:-1]) / 100) if x.endswith("%") else float(x) / 255) for x in m.groups())
+    m = re.fullmatch(r"oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)(?:deg)?.*\)", v)
+    if m:
+        import math
+        L = float(m.group(1)[:-1]) / 100 if m.group(1).endswith("%") else float(m.group(1))
+        C, H = float(m.group(2)), math.radians(float(m.group(3)))
+        a, b = C * math.cos(H), C * math.sin(H)
+        l_, m_, s_ = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3, (L - 0.1055613458 * a - 0.0638541728 * b) ** 3, \
+                     (L - 0.0894841775 * a - 1.2914855480 * b) ** 3
+        rgb = (4.0767416621 * l_ - 3.3077115913 * m_ + 0.2309699292 * s_,
+               -1.2684380046 * l_ + 2.6097574011 * m_ - 0.3413193965 * s_,
+               -0.0041960863 * l_ - 0.7034186147 * m_ + 1.7076147010 * s_)
+        return tuple(min(1.0, max(0.0, c)) for c in rgb)
+    return None
+
+def contrast(fg, bg):
+    a, b = to_linear_rgb(fg), to_linear_rgb(bg)
+    if not a or not b: return None
+    y = lambda c: 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+    hi, lo = sorted((y(a), y(b)), reverse=True)
+    return (hi + 0.05) / (lo + 0.05)
+
+def contrast_pairs(toks):
+    """검사할 (전경, 배경, 기준, 용도) 목록 — 토큰 이름 규칙으로 자동 구성."""
+    has = lambda k: k in toks
+    bgs = [k for k in ("--color-bg", "--color-background", "--color-surface", "--color-card") if has(k)]
+    texts = [k for k in ("--color-text", "--color-foreground", "--color-text-muted", "--color-muted-foreground") if has(k)]
+    pairs = [(t, b, 4.5, "본문 글자") for t in texts for b in bgs]
+    for k in toks:
+        if k.endswith(("-fg", "-foreground")) and k not in texts:
+            base = k.rsplit("-", 1)[0] if k.endswith("-fg") else k[: -len("-foreground")]
+            if has(base): pairs.append((k, base, 4.5, "버튼·배지 글자"))
+    for s in ("--color-primary", "--color-danger", "--color-success", "--color-warning", "--color-info"):
+        if has(s) and bgs: pairs.append((s, bgs[0], 3.0, "아이콘·경계(글자로 쓰면 4.5 필요)"))
+    if has("--color-input") and bgs:  # 입력창 경계는 3:1 필요, --color-border(장식용 구분선)는 기준 없음
+        pairs += [("--color-input", b, 3.0, "입력창·체크박스 경계") for b in bgs]
+    return pairs
+
+def check_contrast(base, dark):
+    rows, fails = [], 0
+    for mode, toks in (("라이트", base), ("다크", {**base, **dark})):
+        if mode == "다크" and not dark: continue
+        for fg, bg, need, use in contrast_pairs(toks):
+            r = contrast(_resolve(toks[fg], toks), _resolve(toks[bg], toks))
+            ok = r is not None and r >= need
+            if r is not None and not ok: fails += 1
+            rows.append((mode, fg, bg, r, need, use, ok))
+    print("■ 대비 검사 (WCAG 2.x — 본문 4.5:1, 아이콘·경계 3:1)")
+    print("  | 모드 | 전경 | 배경 | 대비 | 기준 | 용도 | 결과 |\n  |---|---|---|---|---|---|---|")
+    for mode, fg, bg, r, need, use, ok in rows:
+        print(f"  | {mode} | `{fg}` | `{bg}` | {'?' if r is None else f'{r:.2f}'} | {need} | {use} | "
+              f"{'⚠️ 색 형식 해석 불가' if r is None else '✅' if ok else '❌'} |")
+    print(f"■ {'대비 실패 ' + str(fails) + '건 → 토큰 값만 고친 뒤 다시 실행' if fails else '대비 통과 ✅'}")
+    return fails
+
+def scan_hardcoded(root):
+    """컴포넌트에 직접 쓴 색·px — 토큰 우회 탐지."""
+    pat = [(re.compile(r"#[0-9a-fA-F]{3,8}\b"), "hex 색"), (re.compile(r"\[(?:#|\d+(?:\.\d+)?px)"), "Tailwind 임의값"),
+           (re.compile(r"Color\(0x[0-9a-fA-F]{8}\)"), "Flutter Color 직접"), (re.compile(r"(?<![\w-])\d+px\b"), "px 직접")]
+    exts = (".tsx", ".jsx", ".ts", ".js", ".vue", ".svelte", ".dart", ".css", ".scss")
+    hits = []
+    for d, dirs, files in os.walk(root):
+        dirs[:] = [x for x in dirs if x not in ("node_modules", ".next", "dist", "build", ".dart_tool")]
+        for f in files:
+            if not f.endswith(exts) or f.startswith("tokens"): continue
+            p = os.path.join(d, f)
+            for i, line in enumerate(open(p, encoding="utf-8", errors="replace"), 1):
+                if line.lstrip().startswith(("//", "/*", "*", "@import", "--")): continue
+                for rx, what in pat:
+                    if rx.search(line): hits.append((os.path.relpath(p, root).replace("\\", "/"), i, what, line.strip()[:70])); break
+    print(f"■ 토큰 우회 검사 ({root}): {len(hits)}건")
+    for f, i, what, s in hits[:15]: print(f"  ❌ {f}:{i} {what} — {s}")
+    if len(hits) > 15: print(f"  … 외 {len(hits) - 15}건")
+    return len(hits)
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("tokens", nargs="?")
     ap.add_argument("-o", "--out", default="design/preview.html")
     ap.add_argument("--md")
     ap.add_argument("--init", metavar="TOKENS_CSS")
+    ap.add_argument("--check", action="store_true", help="색 대비(WCAG) 검사만 출력")
+    ap.add_argument("--scan", metavar="DIR", help="컴포넌트 폴더에서 hex·px 직접 사용 탐지")
     a = ap.parse_args()
+    if a.scan and not a.tokens and not a.check:
+        scan_hardcoded(a.scan); return
+    if a.check:
+        if not a.tokens: ap.error("tokens.css 경로가 필요합니다")
+        base, dark, _ = parse(open(a.tokens, encoding="utf-8").read())
+        if not base: sys.exit("토큰을 찾지 못했습니다 (@theme / :root 의 --변수)")
+        check_contrast(base, dark)
+        if a.scan: scan_hardcoded(a.scan)
+        return
     if a.init:
         if os.path.exists(a.init): sys.exit(f"이미 있음: {a.init} (덮어쓰지 않음)")
         os.makedirs(os.path.dirname(os.path.abspath(a.init)), exist_ok=True)
