@@ -16,16 +16,16 @@ Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정 모음입니다.
 
 ```powershell
 # 1. 받기
-git clone https://github.com/DevOps0906/nomad-agent-os.git ~\work\nomad-agent-os
+git clone https://github.com/DevOps0906/nomad-agent-os.git ~\workspace\dev\nomad-agent-os
 
 # 2. 설치 (PC마다 한 번)
-~\work\nomad-agent-os\install.ps1
+~\workspace\dev\nomad-agent-os\install.ps1
 
 # 3. 내 프로젝트에 적용 (프로젝트마다 한 번)
-~\work\nomad-agent-os\install.ps1 init ~\work\내프로젝트
+~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\내프로젝트명
 
 # 4. 시작
-cd ~\work\내프로젝트
+cd ~\workspace\dev\내프로젝트명
 claude
 ```
 
@@ -35,16 +35,16 @@ claude
 
 ```bash
 # 1. 받기
-git clone https://github.com/DevOps0906/nomad-agent-os.git ~/work/nomad-agent-os
+git clone https://github.com/DevOps0906/nomad-agent-os.git ~/workspace/dev/nomad-agent-os
 
 # 2. 설치 (PC마다 한 번)
-bash ~/work/nomad-agent-os/install.sh
+bash ~/workspace/dev/nomad-agent-os/install.sh
 
 # 3. 내 프로젝트에 적용 (프로젝트마다 한 번)
-bash ~/work/nomad-agent-os/install.sh init ~/work/내프로젝트
+bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/내프로젝트명
 
 # 4. 시작
-cd ~/work/내프로젝트
+cd ~/workspace/dev/내프로젝트명
 claude
 ```
 

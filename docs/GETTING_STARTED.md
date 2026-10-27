@@ -20,19 +20,19 @@
 
 **PowerShell**
 ```powershell
-cd ~\work
-git clone https://github.com/<계정>/<저장소>.git
-~\work\nomad-agent-os\install.ps1 init ~\work\<저장소>
-cd <저장소>
+cd ~\workspace\dev
+git clone https://github.com/<계정>/<저장소명>.git
+~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\<저장소명>
+cd <저장소명>
 claude
 ```
 
 **Git Bash**
 ```bash
-cd ~/work
-git clone https://github.com/<계정>/<저장소>.git
-bash ~/work/nomad-agent-os/install.sh init ~/work/<저장소>
-cd <저장소> && claude
+cd ~/workspace/dev
+git clone https://github.com/<계정>/<저장소명>.git
+bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/<저장소명>
+cd <저장소명> && claude
 ```
 
 ### 2단계. AGENTS.md를 실제 코드에 맞추기 ⭐ 가장 중요
@@ -83,16 +83,16 @@ git push
 
 **PowerShell**
 ```powershell
-~\work\nomad-agent-os\install.ps1 init ~\work\<프로젝트> --name "<제품명>"
-cd ~\work\<프로젝트>
+~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\<프로젝트명> --name "<제품명>"
+cd ~\workspace\dev\<프로젝트명>
 git init -b main
 claude
 ```
 
 **Git Bash**
 ```bash
-bash ~/work/nomad-agent-os/install.sh init ~/work/<프로젝트> --name "<제품명>"
-cd ~/work/<프로젝트> && git init -b main && claude
+bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/<프로젝트명> --name "<제품명>"
+cd ~/workspace/dev/<프로젝트명> && git init -b main && claude
 ```
 
 ### 2단계. 기획 — `/plan <제품명>`
@@ -131,7 +131,7 @@ cd ~/work/<프로젝트> && git init -b main && claude
 ### 7단계. GitHub에 올리기
 
 ```bash
-gh repo create <계정>/<프로젝트> --private --source . --push
+gh repo create <계정>/<프로젝트명> --private --source . --push
 ```
 
 ---

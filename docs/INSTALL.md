@@ -33,13 +33,13 @@
 
 **PowerShell**
 ```powershell
-cd ~\work\nomad-agent-os
+cd ~\workspace\dev\nomad-agent-os
 .\install.ps1
 ```
 
 **Git Bash · macOS · Linux**
 ```bash
-cd ~/work/nomad-agent-os
+cd ~/workspace/dev/nomad-agent-os
 bash install.sh
 ```
 
@@ -94,18 +94,18 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 **PowerShell**
 ```powershell
-~\work\nomad-agent-os\install.ps1 init ~\work\내프로젝트
+~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\내프로젝트명
 
 # 표시 이름을 직접 정하려면
-~\work\nomad-agent-os\install.ps1 init ~\work\내프로젝트 --name "쇼핑몰"
+~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\내프로젝트명 --name "쇼핑몰"
 ```
 
 **Git Bash**
 ```bash
-bash ~/work/nomad-agent-os/install.sh init ~/work/내프로젝트
+bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/내프로젝트명
 
 # 표시 이름을 직접 정하려면
-bash ~/work/nomad-agent-os/install.sh init ~/work/내프로젝트 --name "쇼핑몰"
+bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/내프로젝트명 --name "쇼핑몰"
 ```
 
 ### 프로젝트에 생기는 파일
@@ -131,12 +131,12 @@ bash ~/work/nomad-agent-os/install.sh init ~/work/내프로젝트 --name "쇼핑
 
 **PowerShell**
 ```powershell
-token-audit ~\work\내프로젝트
+token-audit ~\workspace\dev\내프로젝트명
 ```
 
 **Git Bash**
 ```bash
-token-audit ~/work/내프로젝트
+token-audit ~/workspace/dev/내프로젝트명
 ```
 
 `■ 예산 안 ✅`이 나오면 정상입니다.

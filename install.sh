@@ -59,7 +59,7 @@ if [ "${1:-}" = "init" ]; then
   low() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }   # Windows 대소문자 무시 비교
   inside_src() { case "$(low "$1")/" in "$(low "$SRC")/"*) return 0 ;; esac; return 1; }
   refuse() { rmdir "$1" 2>/dev/null || true; echo "❌ 대상 경로가 NOMAD 저장소($SRC) 안입니다: $1"
-    echo "   프로젝트는 저장소 밖에 두세요. 예: bash $SRC/install.sh init /d/WorkSpace/DEV/<프로젝트>"; exit 1; }
+    echo "   프로젝트는 저장소 밖에 두세요. 예: bash $SRC/install.sh init ~/workspace/dev/<프로젝트명>"; exit 1; }
   case "$P" in /*|[A-Za-z]:*) PA="$P" ;; *) PA="$PWD/$P" ;; esac
   inside_src "$PA" && refuse "$PA"                          # 폴더를 만들기 전에 1차 검사
   mkdir -p "$P" && PA="$(cd "$P" && pwd)" || { echo "❌ 폴더를 만들 수 없습니다: $P"; exit 1; }

@@ -53,11 +53,11 @@
 ## 1. 받기 + NOMAD 적용
 **Git Bash**
 ```bash
-bash /d/WorkSpace/DEV/nomad-agent-os/install.sh            # PC에서 처음이면 1번만 (이미 했으면 생략)
+bash ~/workspace/dev/nomad-agent-os/install.sh            # PC에서 처음이면 1번만 (이미 했으면 생략)
 
-cd /d/WorkSpace/DEV
+cd ~/workspace/dev
 git clone https://github.com/DevOps0906/SceneFlow.git
-bash /d/WorkSpace/DEV/nomad-agent-os/install.sh init /d/WorkSpace/DEV/SceneFlow --name SceneFlow
+bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/SceneFlow --name SceneFlow
 
 cd SceneFlow
 git status --short        # 새로 생긴 것: AGENTS.md CLAUDE.md .claude/ .codex/ .gemini/ .geminiignore .gitignore tasks/  (기존 파일 변경 없음)
@@ -65,13 +65,11 @@ claude
 ```
 **PowerShell**
 ```powershell
-D:\WorkSpace\DEV
-omad-agent-os\install.ps1            # PC에서 처음이면 1번만 (이미 했으면 생략)
+~\workspace\dev\nomad-agent-os\install.ps1            # PC에서 처음이면 1번만 (이미 했으면 생략)
 
-cd D:\WorkSpace\DEV
+cd ~\workspace\dev
 git clone https://github.com/DevOps0906/SceneFlow.git
-D:\WorkSpace\DEV
-omad-agent-os\install.ps1 init D:\WorkSpace\DEV\SceneFlow --name SceneFlow
+~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\SceneFlow --name SceneFlow
 
 cd SceneFlow
 git status --short
