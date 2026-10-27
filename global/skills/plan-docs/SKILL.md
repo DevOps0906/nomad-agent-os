@@ -19,7 +19,7 @@ description: 기획 문서(린 검증·PRD·기능/API/데이터 명세·ADR·�
 | `00_LEAN.md` | 문제·고객·가설·검증 방법·통과 기준·결과 | 60줄 | `templates/lean.md` |
 | `01_PRD.md` | 무엇을·누구에게·범위(MVP/이후)·성공 지표·금지 | 150줄 | `templates/prd.md` |
 | `02_ARCHITECTURE.md` | 구성 요소·경계·데이터 흐름(다이어그램 링크) | 120줄 | — |
-| `03_SCREENS_UX.md` | 화면 목록 표·상태·반응형 3구간 메모 | 화면당 15줄 | — |
+| `03_SCREENS_UX.md` | 화면 · 상태 · 흐름 표 (유형·구성 블록·다음 화면) → `plan2spec` 입력 | 화면당 2줄(표 행) | `ux-patterns` 2절 |
 | `04_API.md` | 엔드포인트 표(메서드·경로·입력·출력·권한·오류) | 엔드포인트당 6줄 | — |
 | `05_DATA_MODEL.md` | 테이블 표 + `diagrams/erd.mmd` 링크(손으로 ERD 그리지 않음) | 테이블당 12줄 | — |
 | `06_AGENT_PLAN.md` / `tasks/` | 작업 분해: 웨이브·작업·담당 팀원·완료 조건 | 작업당 12줄 | `templates/task.md` |

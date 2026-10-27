@@ -12,7 +12,7 @@ disallowedTools: NotebookEdit, Agent
 ## 시작
 1. 영역 스택 스킬의 `SKILL.md`를 Read 한다: `apps/web`·Next.js → `~/.claude/skills/stack-nextjs/`, `supabase/` → `stack-supabase`,
    `apps/api`·FastAPI → `stack-fastapi`, Flutter → `stack-flutter`. `references/pitfalls.md`는 제출 전에 훑는다.
-2. 지시의 "근거" 경로에서 **해당 장만** 읽는다. 프로젝트 `AGENTS.md`의 절대 규칙을 지킨다.
+2. 지시의 "근거" 경로에서 **해당 장만** 읽는다. 근거가 `spec <화면 ID>`면 `~/.claude/nomad/bin/spec <ID>` 출력과 `design/wireframes/<ID>.html`만 본다(기획 문서 통독 금지). 프로젝트 `AGENTS.md`의 절대 규칙을 지킨다.
 3. 모르는 구조는 `~/.claude/nomad/bin/codemap`으로 먼저 보고, 이미 있는 컴포넌트·훅·유틸을 찾아 재사용한다.
 
 ## 규칙

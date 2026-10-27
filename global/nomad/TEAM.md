@@ -14,7 +14,7 @@
 | 디자인 토큰·DESIGN.md·화면 미리보기 | `designer` | sonnet-5-5 |
 | 구조도·흐름도·시퀀스·ERD (Mermaid) | `diagrammer` | haiku-5-5 |
 | 테스트 작성·실행 | `tester` | sonnet-5-5 |
-| 변경 후 리뷰 (mode: code·contract·security·doc) | `reviewer` | sonnet-5-5 |
+| 변경 후 리뷰 (mode: code·contract·security·doc·design) | `reviewer` | sonnet-5-5 |
 | 착수 전 계획 공격 (위험 작업만) | `challenger` | opus-5-5 |
 | 같은 문제로 2회 실패 후에만 | `advisor` (고문) | fable-5-1 |
 
@@ -22,7 +22,7 @@
 ```
 목표: <한 문장>
 쓰기 허용: <경로 glob, 없으면 none>
-근거: <문서경로#장> (내용 붙여넣기 금지)
+근거: <문서경로#장 또는 spec 화면ID> (내용 붙여넣기 금지)
 완료 조건: <실행할 확인 명령 또는 체크 항목>
 금지: <건드리지 말 것>
 ```
@@ -33,11 +33,11 @@
 ## 위험도별 검증 (필요한 만큼만)
 | 위험 | 예 | 착수 전 | 변경 후 |
 |---|---|---|---|
-| 낮음 | 화면 문구·스타일·문서 | — | builder 자가 검증(`q`) |
+| 낮음 | 화면 문구·스타일·문서 | — | builder 자가 검증(`q`), 화면이면 reviewer(design) |
 | 보통 | 기능·API·컴포넌트 | — | reviewer(code) |
 | 높음 | 결제·인증·RLS·마이그레이션·외부 계약·새 의존성·노출 면·키 권한 | challenger | reviewer(code)+(security/contract) → 필요 시 tester |
 
 ## 도구
-- `~/.claude/nomad/bin/`: `q` 조용한 실행 · `codemap` 구조 지도 · `delta` 변경분만 읽기 · `plan-scaffold` 기획 뼈대 · `design-preview` 토큰 미리보기 · `deps2mmd` 구조도 · `sql2erd` ERD · `mmd-check` 다이어그램 검증 · `oss` 로컬 LLM 위임 · `token-audit` 상시 로드 측정 · `secscan` 보안 점검.
+- `~/.claude/nomad/bin/`: `q` · `codemap` · `delta` · `plan-scaffold` · `plan2spec`(화면 표→사양·구조도·시안·필수 검사) · `spec <ID>`(화면 1개만) · `design-preview` · `shot` · `deps2mmd` · `sql2erd` · `mmd-check` · `oss` · `token-audit` · `secscan` · `nomad-module`.
 - 위임할 때 팀장이 이미 읽은 내용을 팀원에게 다시 읽히지 않는다: 필요한 사실은 지시에 1~3줄로 적고, 팀원이 읽을 것은 경로#장으로 좁힌다.
 - 상세 설계와 근거: `~/.claude/nomad/ARCHITECTURE.md` (필요할 때만 읽는다).

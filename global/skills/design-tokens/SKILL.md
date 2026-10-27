@@ -16,11 +16,13 @@ description: 디자인 시스템을 코드 토큰 중심으로 만드는 절차(
 ## 절차
 | 단계 | 담당 | 결과 |
 |---|---|---|
+| 0 시안 초안 | 스크립트 | 화면 표가 있으면 `plan2spec` → `design/wireframes/`(화면별 3구간 HTML, 토큰 반영) — 모델이 시안을 그리지 않음 |
 | 1 브리프 | 팀장 | 대상·주된 일·분위기 3단어·피할 것 (DESIGN.md 1장, 10줄) |
 | 2 토큰 초안 | designer | 없으면 `design-preview --init src/styles/tokens.css`(3구간 폰트 포함 시작본) → 값만 수정 |
 | 3 반응형 | designer | 아래 3구간 폰트 표 채움 (`@media (width >= 768px/1200px)`의 `:root` 덮어쓰기) |
 | 4 미리보기 | 스크립트 | `design-preview src/styles/tokens.css -o design/preview.html --md docs/DESIGN_TOKENS.md` — HTML·표를 모델이 쓰지 않음 |
-| 5 확정 | 사용자 | 수정 값 → 토큰 한 줄 수정 → 4번 재실행 |
+| 4.5 검사 | 스크립트 | `design-preview <tokens> --check --scan src/components`(대비·토큰 우회) → `plan2spec`(시안 갱신) → `shot design/wireframes` |
+| 5 확정 | 사용자 | `design/preview.html` + `design/wireframes/index.html` 확인 → 수정 값 → 토큰 한 줄 수정 → 4번 재실행 |
 | 6 화면 | builder | 컴포넌트 단위 구현(확정 전에는 화면 작업 시작 안 함) |
 
 ## 반응형 3구간 폰트 표 (필수)
@@ -33,7 +35,12 @@ description: 디자인 시스템을 코드 토큰 중심으로 만드는 절차(
 | `--text-caption` | 12px | 13px | 13px |
 값은 시작점이다. 한국어 본문 서체를 반드시 지정한다(예: Pretendard). 숫자·금액은 고정폭 서체 토큰을 따로 둔다.
 
+## 색 토큰 규칙 (대비 검사가 이 이름으로 짝을 찾는다)
+`--color-bg` · `--color-surface` 위의 `--color-text` · `--color-text-muted`(4.5:1), `--color-X` 위의 `--color-X-fg`(4.5:1),
+입력창·체크박스 경계 `--color-input`(3:1, WCAG 1.4.11) — 장식용 구분선은 `--color-border`(기준 없음).
+Flutter는 같은 이름을 `lib/theme/tokens.dart` 상수로 옮기고 위젯에는 테마 값만 쓴다(`design-preview --scan lib`이 `Color(0x…)` 탐지).
+
 ## 출시 전 체크
-- [ ] 375 · 768 · 1200 · 1440px에서 깨짐·가로 스크롤 없음
+- [ ] `shot <URL>` 375 · 768 · 1280 · 1440px에서 깨짐·페이지 가로 스크롤 없음 (표·보드는 카드 안 스크롤)
 - [ ] 대비 4.5:1(본문), 포커스 링 보임, `prefers-reduced-motion` 존중
 - [ ] 컴포넌트에 hex·px 직접 사용 0건 (`Grep "#[0-9a-fA-F]{3,6}"` in components)
