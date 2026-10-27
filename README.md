@@ -11,15 +11,38 @@
 | 그림·미리보기 생성 | 모델 | 모델 | 모델 | **스크립트(토큰 0)** |
 | 오픈소스 도구·로컬 LLM | ✗ | ✗ | ✗ | **AGENTS.md 정본 + oss** |
 
-## 설치 (Windows는 Git Bash)
+## 설치 (macOS · Linux · Windows는 Git Bash)
 
+**필요:** [Claude Code](https://claude.com/claude-code), git, Python 3.8+, (다이어그램 렌더링 시) Node.js — `npx`로 mermaid-cli 자동 사용.
+Windows는 python.org 설치본을 쓰고, *설정 > 앱 > 앱 실행 별칭*에서 `python.exe`·`python3.exe` 스텁을 끄세요.
+
+**1. 받기**
 ```bash
-bash install.sh                 # 전역(~/.claude): 팀 10명 · 스킬 7 · 명령 7 · 도구 12 · 훅
-bash install.sh init ~/work/내프로젝트   # 프로젝트에 AGENTS.md · CLAUDE.md · rules · tasks 복사(기존 파일 보존)
+git clone https://github.com/DevOps0906/nomad-agent-os.git
+cd nomad-agent-os
+```
+
+**2. 전역 설치** — 모든 프로젝트에서 같은 팀을 씁니다.
+```bash
+bash install.sh                 # ~/.claude: 팀 10명 · 스킬 7 · 명령 7 · 도구 12 · 훅
 # 옵션: --no-path (PATH 등록 안 함), --codex (Codex CLI 전역 AGENTS.md에도 규칙 추가)
 ```
-기존 `~/.claude/CLAUDE.md`·`settings.json`은 덮어쓰지 않고 한 줄 import·훅만 추가합니다(백업: `~/.claude/.nomad-backup/`).
-필요: Python 3, git, (다이어그램 렌더링) Node.js — `npx`로 mermaid-cli 자동 사용.
+기존 `~/.claude/CLAUDE.md`·`settings.json`은 덮어쓰지 않고 한 줄 import·훅만 추가합니다. 같은 이름의 에이전트·스킬·명령은 백업 후 교체합니다(백업: `~/.claude/.nomad-backup/<시각>/`).
+`~/.claude/nomad/bin`이 `~/.bashrc`(zsh면 `~/.zshrc`)의 PATH에 추가되니 **새 터미널**을 여세요.
+
+**3. 프로젝트 적용** — 프로젝트마다 한 번.
+```bash
+bash install.sh init ~/work/내프로젝트   # AGENTS.md · CLAUDE.md · rules · tasks 복사(기존 파일 보존·병합)
+```
+그다음 `AGENTS.md`의 `<프로젝트명>`·스택·명령·고유 규칙을 채우고, 프로젝트 폴더에서 `claude` 실행 → `/plan` 또는 `/next`.
+
+**4. 확인**
+```bash
+token-audit ~/work/내프로젝트    # 상시 로드 토큰 측정 (PATH 미등록 시 ~/.claude/nomad/bin/token-audit)
+```
+Claude Code에서 `/agents`를 열어 팀 10명이 보이면 끝입니다.
+
+**업데이트:** 받은 폴더에서 `git pull && bash install.sh` — 다시 실행해도 훅·import는 중복 추가되지 않습니다.
 
 ## 매일 쓰는 법
 
