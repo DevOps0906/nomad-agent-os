@@ -22,6 +22,7 @@ Claude Code에서 입력합니다.
 | `/check` | 린트 · 타입 · 테스트를 돌리고 실패만 요약 |
 | `/token-audit` | 항상 읽히는 설정의 토큰 측정 |
 | `/oss 지시` | 단순 작업을 로컬 LLM(Ollama 등)에 맡김 |
+| `/secure` · `/secure setup [--ci]` | 보안 점검(SBOM · 취약점 · 라이선스) / Dependabot · SECURITY.md · CI SBOM 생성 → [보안 가이드](SECURITY.md) |
 
 ---
 
@@ -56,6 +57,8 @@ Claude Code에서 `/agents`로 확인합니다. 팀장이 알아서 나눠 맡�
 | `mmd-check` | Mermaid 검증 + SVG | `mmd-check docs/diagrams/erd.mmd` |
 | `oss` | 로컬 LLM에 맡기기 | `oss "3줄 요약" log.txt` |
 | `token-audit` | 상시 로드 토큰 측정 | `token-audit .` |
+| `secscan` | SBOM · 취약점 우선순위 · 라이선스 · 보안 설정 파일 | `secscan all .` · `secscan vuln --kev` · `secscan setup --ci` |
+| `nomad-os` | 어디서든 NOMAD 설치기 실행 | `nomad-os init <프로젝트 경로>` |
 
 `readguard` · `hook-read`는 Claude Code가 자동으로 쓰는 훅이라 직접 실행하지 않습니다.
 
@@ -74,8 +77,8 @@ flowchart LR
   end
   subgraph HOME["~/.claude (전역 · 모든 프로젝트 공유)"]
     HA["agents/ 팀 10명"]
-    HS["skills/ 7개"]
-    HC["commands/ 7개"]
+    HS["skills/ 8개"]
+    HC["commands/ 8개"]
     HN["nomad/ 규칙 + bin 도구"]
     HM["CLAUDE.md 맨 위에 @nomad/TEAM.md"]
     HJ["settings.json 에 읽기 훅 병합"]
@@ -104,11 +107,11 @@ flowchart TB
   end
   CTX --> LEAD["팀장 = 주 세션 (Opus)"]
   CMD --> LEAD
-  LEAD -- "필요 시 로드" --> SK["skills: plan-docs · design-tokens · diagram · stack-*"]
+  LEAD -- "필요 시 로드" --> SK["skills: plan-docs · design-tokens · diagram · security-baseline · stack-*"]
   LEAD -- "위임" --> TM["agents: builder · planner · designer · tester · reviewer · scout · intern · diagrammer"]
   LEAD -- "위험 계획" --> CH["challenger"]
   LEAD -- "2회 실패" --> AD["advisor"]
-  TM --> BIN["nomad/bin 도구 (토큰 0)<br/>q · codemap · delta · plan-scaffold · design-preview<br/>deps2mmd · sql2erd · mmd-check · oss · token-audit"]
+  TM --> BIN["nomad/bin 도구 (토큰 0)<br/>q · codemap · delta · plan-scaffold · design-preview<br/>deps2mmd · sql2erd · mmd-check · oss · token-audit · secscan"]
   LEAD --> BIN
   HK["settings.json 훅<br/>SessionStart · PreToolUse(Read) · PostToolUse"] --> HR["hook-read → readguard.py<br/>반복 읽기 차단 · 바뀐 줄만 전달"]
   LEAD -. "Read 할 때마다" .-> HK
@@ -154,13 +157,17 @@ nomad-agent-os/
 │   │   ├── diagram.md            #   /diagram: 구조도 · 흐름도 · 시퀀스 · ERD 생성 · 검증
 │   │   ├── check.md              #   /check: 린트 · 타입 · 테스트 실행, 실패만 요약
 │   │   ├── token-audit.md        #   /token-audit: 상시 로드 토큰 측정 + 줄일 곳 제안
-│   │   └── oss.md                #   /oss: 단순 텍스트 작업을 로컬 LLM(Ollama 등)에 위임
+│   │   ├── oss.md                #   /oss: 단순 텍스트 작업을 로컬 LLM(Ollama 등)에 위임
+│   │   └── secure.md             #   /secure: 보안 점검 · setup(Dependabot · SECURITY.md · CI SBOM)
 │   ├── skills/                   # 스킬 — 필요할 때만 로드되는 절차 · 규약
 │   │   ├── plan-docs/            #   기획 문서 절차
 │   │   │   ├── SKILL.md          #     절차 본문
 │   │   │   └── templates/        #     lean.md(린 검증) · prd.md · adr.md(결정 기록) · task.md(작업 1건)
 │   │   ├── design-tokens/SKILL.md#   브리프 → 토큰 → 3구간 폰트 → 미리보기 → 사람 확정
 │   │   ├── diagram/SKILL.md      #   Mermaid 작성 규칙 (ERD는 sql2erd 기계 생성)
+│   │   ├── security-baseline/    #   보안 기본: 레벨 L0~L3 판정 + references/
+│   │   │                         #     supply-chain(의존성·라이선스·SBOM) · vuln-priority(KEV·EPSS·체인·VEX)
+│   │   │                         #     threat-model(기능당 위협 메모) · agent-security(AI 키·권한) · compliance(규제·표준)
 │   │   ├── stack-nextjs/         #   Next.js · React · Tailwind v4 · shadcn/ui 규약
 │   │   ├── stack-supabase/       #   Postgres · RLS · Auth · 마이그레이션 규약
 │   │   ├── stack-fastapi/        #   FastAPI · Pydantic v2 · LLM 게이트 규약
@@ -179,12 +186,14 @@ nomad-agent-os/
 │           ├── oss               #     OpenAI 호환 로컬 LLM에 텍스트 작업 위임
 │           ├── hook-read         #     훅 → readguard 호출 래퍼 (의도적 차단 외 실패는 통과 처리)
 │           ├── _py               #     파이썬 도구 공통 실행기 (Windows 파이썬 탐지 · UTF-8)
-│           ├── deps2mmd · design-preview · readguard · sql2erd · token-audit   # _py 를 거쳐 py/ 실행
+│           ├── deps2mmd · design-preview · readguard · sql2erd · token-audit · secscan   # _py 를 거쳐 py/ 실행
+│           ├── (nomad-os)        #     설치 때 생성 — 저장소 위치를 기억하는 설치기 실행기
 │           └── py/
 │               ├── deps2mmd.py   #       import 분석 → 모듈 의존 구조도 (TS/JS · Python · Dart)
 │               ├── design-preview.py #   tokens.css → 미리보기 HTML · 토큰 표 (--init 시작 토큰)
 │               ├── readguard.py  #       반복 읽기 차단 훅 본체 · 바뀐 줄만 전달
 │               ├── sql2erd.py    #       SQL 마이그레이션 → Mermaid ERD
+│               ├── secscan.py    #       lockfile → CycloneDX SBOM · OSV 취약점(+KEV·EPSS) · 라이선스 정책 · setup
 │               └── token-audit.py#       상시 로드 컨텍스트 토큰 추정 · 예산 초과 경고
 │
 └── project-template/             # ▶ 프로젝트 템플릿 → init 대상 폴더로 복사 (기존 파일 보존 · 병합)

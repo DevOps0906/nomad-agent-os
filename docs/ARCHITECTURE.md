@@ -66,8 +66,8 @@
 ├── CLAUDE.md                      @nomad/TEAM.md + 개인 설정
 ├── settings.json                  readguard 훅(SessionStart·PreToolUse Read·PostToolUse)
 ├── agents/   10개                 scout intern builder planner designer diagrammer tester reviewer challenger advisor
-├── skills/   7개                  plan-docs design-tokens diagram stack-nextjs stack-supabase stack-fastapi stack-flutter
-├── commands/ 7개                  /next /plan /design /diagram /check /token-audit /oss
+├── skills/   8개                  plan-docs design-tokens diagram security-baseline stack-nextjs stack-supabase stack-fastapi stack-flutter
+├── commands/ 8개                  /next /plan /design /diagram /check /token-audit /oss /secure
 └── nomad/
     ├── CORE.md                    도구 무관 원칙(한국어·반응형 3구간·4원칙·토큰 규칙)
     ├── TEAM.md                    팀 표·위임 규격·위험도별 검증

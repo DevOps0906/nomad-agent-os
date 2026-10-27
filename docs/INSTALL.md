@@ -50,8 +50,8 @@ bash install.sh
 `~/.claude` 폴더에 들어갑니다. 모든 프로젝트가 같이 씁니다.
 
 - 팀원 10명 (`agents/`)
-- 스킬 7개 · 슬래시 명령 7개
-- 도구 12개 (`nomad/bin/`)
+- 스킬 8개 · 슬래시 명령 8개 (보안 `security-baseline` · `/secure` 포함)
+- 도구 13개 (`nomad/bin/`) + 어디서든 쓰는 `nomad-os` 명령
 - 반복 읽기 차단 훅 (`settings.json`)
 
 기존 파일은 지우지 않습니다.

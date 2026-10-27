@@ -78,6 +78,9 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | `/design` | 디자인 토큰 + 미리보기 |
 | `/diagram 결제 흐름` | 구조도 · 흐름도 · ERD |
 | `/check` | 린트 · 테스트 실패만 요약 |
+| `/secure` | 보안 점검 — SBOM · 취약점(먼저 고칠 3가지) · 라이선스 |
+
+🔒 **보안은 기본 적용됩니다.** 기획(PRD 보안 절) · 작업 분해(보안 영향) · 리뷰(의존성 · 노출 면 · 키 권한)에 들어가 있습니다. → [보안 가이드](docs/SECURITY.md)
 
 전체 명령 · 팀 · 도구는 → [레퍼런스](docs/REFERENCE.md)
 
@@ -102,6 +105,7 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | [설치 가이드](docs/INSTALL.md) | 준비물 · 옵션 · 확인 · 업데이트 · 제거 |
 | [시작하기](docs/GETTING_STARTED.md) | 기존 저장소에 적용 / 처음부터 시작, 단계별 |
 | [AI 도구 같이 쓰기](docs/MULTI_AI.md) | ChatGPT · Gemini도 쓸 때 |
+| [보안 가이드](docs/SECURITY.md) | 보안 레벨 · `/secure` · SBOM · 라이선스 · 취약점 우선순위 |
 | [레퍼런스](docs/REFERENCE.md) | 명령 · 팀 · 도구 · 폴더 구조 |
 | [예시: SceneFlow](docs/examples/SCENEFLOW.md) | 기획 문서만 있는 저장소에 적용한 실제 사례 |
 | [설계 문서](docs/ARCHITECTURE.md) | 왜 이렇게 만들었나 · 토큰 측정 결과 |
