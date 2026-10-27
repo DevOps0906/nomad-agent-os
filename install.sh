@@ -81,7 +81,7 @@ if [ "${1:-}" = "init" ]; then
   P="$PA"; PBK="$P/.nomad/backup-$TS"; NAME="${NAME:-$(basename "$P")}"
   NEW_AGENTS=0; [ -e "$P/AGENTS.md" ] || NEW_AGENTS=1
   echo "■ 프로젝트 템플릿 → $P (기존 파일은 보존, 필요한 줄만 병합)"
-  (cd "$SRC/project-template" && find . -type f ! -name .gitignore ! -name .geminiignore) | while read -r f; do
+  (cd "$SRC/project-template" && find . -type f ! -name .gitignore ! -name .geminiignore ! -path './.nomad/*') | while read -r f; do
     if [ -e "$P/$f" ]; then
       case "$f" in
         ./CLAUDE.md)
@@ -113,6 +113,7 @@ copy_dir() {
   local s="$1" d="$2"; mkdir -p "$d"
   for item in "$s"/* "$s"/.[!.]*; do
     [ -e "$item" ] || continue
+    [ "$(basename "$item")" = ".nomad" ] && continue   # 읽기 훅 캐시는 설치하지 않음
     local name; name=$(basename "$item")
     if [ -e "$d/$name" ]; then mkdir -p "$BK/$(basename "$d")"; cp -R "$d/$name" "$BK/$(basename "$d")/"; rm -rf "${d:?}/$name"; fi
     cp -R "$item" "$d/"

@@ -101,6 +101,8 @@ def read_docs(docs):
     for p in sorted(glob.glob(os.path.join(docs, "**", "*.md"), recursive=True)):
         if any(part in SKIP for part in p.replace("\\", "/").split("/")): continue
         files.append(p)
+    base = os.path.dirname(os.path.abspath(docs))   # 경로 기준 = 프로젝트 폴더 (작업 폴더·드라이브와 무관)
+    rel_of = lambda p: os.path.relpath(p, base).replace("\\", "/")
     model = {"screens": {}, "states": {}, "flows": {}, "apis": {}, "tables": {}, "sources": {}, "counts": {}}
     for p in files:
         text = open(p, encoding="utf-8", errors="replace").read()
@@ -108,7 +110,7 @@ def read_docs(docs):
         for head, rows in tables(text):
             k = kind_of(head)
             if not k: continue
-            found = True; rel = os.path.relpath(p).replace("\\", "/")
+            found = True; rel = rel_of(p)
             model["counts"].setdefault(rel, {}).setdefault(k, 0)
             idc = col(head, "id", "번호")
             for r in rows:
@@ -140,7 +142,7 @@ def read_docs(docs):
                 elif k == "apis":
                     model["apis"][rid] = {"id": rid, "method": g("메서드", "method"), "path": g("경로", "path"),
                                           "row": dict(zip(head, r)), "source": rel}
-        if found: model["sources"][os.path.relpath(p).replace("\\", "/")] = sha(text)
+        if found: model["sources"][rel_of(p)] = sha(text)
     return model
 
 
