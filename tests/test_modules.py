@@ -42,7 +42,7 @@ class Base(unittest.TestCase):
 
 
 class DockerType(Base):
-    FILES = {"Dockerfile": "FROM x", ".dockerignore": "node_modules", ".env.example": "A=1", "nginx.conf": "x", "README.md": "r"}
+    FILES = {"Dockerfile": "FROM x", ".dockerignore": "node_modules", "Dockerfile.dockerignore": "**/.env", ".env.example": "A=1", "nginx.conf": "x", "README.md": "r"}
 
     def test_requires_allow_scripts(self):
         self.mod("dk", self.FILES, type="docker")

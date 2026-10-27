@@ -119,8 +119,23 @@
       "ref": "master",
       "type": "docker",
       "category": "infra",
-      "status": "planned",
-      "desc": "컨테이너 실행 템플릿(api·worker·whisper·PaddleOCR·임베딩·ClamAV, compose profiles) — 뼈대"
+      "desc": "컨테이너 실행 템플릿(api·worker·whisper.cpp·PaddleOCR·TEI 임베딩·ClamAV, compose profiles) — --allow-scripts 필요"
+    },
+    "booking": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "booking",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "domain",
+      "desc": "예약(자원·가능 시간·배타 제약·홀드·결제·리마인드)"
+    },
+    "helpdesk": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "helpdesk",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "domain",
+      "desc": "고객지원(티켓·메일 수신·SLA·내부 메모·FAQ)"
     }
   }
 }
