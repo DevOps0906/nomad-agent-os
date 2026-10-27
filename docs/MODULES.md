@@ -26,7 +26,11 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 | `secure-pack` | secure-pack-module · `/` | 0.0.1 | 🟡 뼈대 | 구조 계획만 — OpenChain · 정책 · VEX · SPDX · CRA · 공공 제출 순서로 채울 예정 |
 | `crm` | blueprints-module · `crm/` | 0.1.0 | ✅ 사용 가능 | CRM — 화면 14 · 흐름 5 · API 14 · 테이블 14 · funnel 리드 전환 연결 |
 | `erp` | blueprints-module · `erp/` | 0.1.0 | ✅ 사용 가능 | ERP — 화면 19 · 흐름 6 · API 20 · 테이블 21 · 하위 영역은 화면 ID 구간 |
-| `lms` | blueprints-module · `lms/` | 0.1.0 | ✅ 사용 가능 | LMS — 화면 16 · 흐름 6 · API 17 · 테이블 16 · 결제는 외부 연결 지점 |
+| `lms` | blueprints-module · `lms/` | 0.1.0 | ✅ 사용 가능 | LMS — 화면 16 · 흐름 6 · API 17 · 테이블 16 · 결제는 payments 이벤트 계약 |
+| `auth-rbac` | blueprints-module · `auth-rbac/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 인증·권한 — 화면 12 · 흐름 5 · API 16 · 테이블 11 |
+| `admin-audit` | blueprints-module · `admin-audit/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 관리 콘솔·감사 — 화면 11 · 흐름 4 · API 10 · 테이블 8 |
+| `notify` | blueprints-module · `notify/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 알림 — 화면 9 · 흐름 5 · API 13 · 테이블 11 |
+| `payments` | blueprints-module · `payments/` | 0.1.0 | ✅ 사용 가능 | 공통 기반 · 결제(토스) — 화면 12 · 흐름 5 · API 14 · 테이블 12 |
 
 - **비공개 레포**라서 GitHub에 로그인된 PC(Git Credential Manager · `gh auth login`)에서만 가져올 수 있습니다.
 - **넣는 기준:** 도메인 기획 청사진은 모두 blueprints-module, 보안 납품·규제 자료는 secure-pack-module. 공개 범위나 관리 주체가 다를 때만 레포를 따로 만듭니다.

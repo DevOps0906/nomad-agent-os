@@ -35,6 +35,38 @@
       "ref": "main",
       "type": "security",
       "desc": "L3 납품·규제 — OpenChain 5230/18974 자가 점검·VEX·SPDX·CRA 필드·오픈소스 정책"
+    },
+    "auth-rbac": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "auth-rbac",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "foundation",
+      "desc": "인증·권한(가입·로그인·소셜·조직·역할·RLS)"
+    },
+    "admin-audit": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "admin-audit",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "foundation",
+      "desc": "관리 콘솔·감사 로그·개인정보 요청"
+    },
+    "notify": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "notify",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "foundation",
+      "desc": "알림(이메일·알림톡·SMS·인앱·동의)"
+    },
+    "payments": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",
+      "path": "payments",
+      "ref": "main",
+      "type": "blueprint",
+      "category": "foundation",
+      "desc": "결제(토스페이먼츠·정기결제·환불·이벤트 계약)"
     }
   }
 }
