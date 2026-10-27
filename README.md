@@ -79,6 +79,10 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | `/diagram 결제 흐름` | 구조도 · 흐름도 · ERD |
 | `/check` | 린트 · 테스트 실패만 요약 |
 | `/secure` | 보안 점검 — SBOM · 취약점(먼저 고칠 3가지) · 라이선스 |
+| `plan2spec` · `spec S-03` | 기획 표 → 구조도 · 흐름도 · 화면별 시안 · 필수 구조 검사 / 화면 하나만 15줄 |
+| `nomad-os module add leadgen .` | 도메인 청사진(리드젠 · CRM · ERP · LMS)을 외부 레포에서 가져오기 |
+
+🎨 **기획이 정해지면 구조도 · 시안이 자동으로 나옵니다.** 대시보드 · 목록 · 폼 등 화면 유형마다 반드시 있어야 하는 구조가 빠지면 🔴로 막습니다. 팀원은 기획 문서를 다시 읽지 않고 필요한 화면만 받습니다. → [기획 → 시안](docs/DESIGN.md)
 
 🔒 **보안은 기본 적용됩니다.** 기획(PRD 보안 절) · 작업 분해(보안 영향) · 리뷰(의존성 · 노출 면 · 키 권한)에 들어가 있습니다. → [보안 가이드](docs/SECURITY.md)
 
@@ -105,6 +109,8 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | [설치 가이드](docs/INSTALL.md) | 준비물 · 옵션 · 확인 · 업데이트 · 제거 |
 | [시작하기](docs/GETTING_STARTED.md) | 기존 저장소에 적용 / 처음부터 시작, 단계별 |
 | [AI 도구 같이 쓰기](docs/MULTI_AI.md) | ChatGPT · Gemini도 쓸 때 |
+| [기획 → 구조도 · 시안](docs/DESIGN.md) | plan2spec · 필수 구조 검사 · 대비 · 3구간 스크린샷 |
+| [모듈](docs/MODULES.md) | 리드젠 · CRM · ERP · LMS 청사진, L3 보안 팩을 외부 레포에서 가져오기 |
 | [보안 가이드](docs/SECURITY.md) | 보안 레벨 · `/secure` · SBOM · 라이선스 · 취약점 우선순위 |
 | [레퍼런스](docs/REFERENCE.md) | 명령 · 팀 · 도구 · 폴더 구조 |
 | [예시: SceneFlow](docs/examples/SCENEFLOW.md) | 기획 문서만 있는 저장소에 적용한 실제 사례 |

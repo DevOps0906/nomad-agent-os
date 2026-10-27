@@ -51,14 +51,18 @@ Claude Code에서 `/agents`로 확인합니다. 팀장이 알아서 나눠 맡�
 | `codemap` | 파일 · 함수 목록 지도 | `codemap src` |
 | `delta` | 바뀐 줄 · 바뀐 파일만 보기 | `delta --changed` |
 | `plan-scaffold` | 기획 문서 뼈대 8개 | `plan-scaffold docs --name 쇼핑몰` |
-| `design-preview` | 디자인 토큰 미리보기 HTML | `design-preview tokens.css -o design/preview.html` |
+| `design-preview` | 디자인 토큰 미리보기 HTML · 대비 검사 · 토큰 우회 탐지 | `design-preview tokens.css -o design/preview.html` · `--check` · `--scan src/components` |
 | `deps2mmd` | 코드 import → 구조도 | `deps2mmd src -o docs/diagrams/architecture.mmd` |
 | `sql2erd` | SQL → ERD | `sql2erd supabase/migrations -o docs/diagrams/erd.mmd` |
 | `mmd-check` | Mermaid 검증 + SVG | `mmd-check docs/diagrams/erd.mmd` |
 | `oss` | 로컬 LLM에 맡기기 | `oss "3줄 요약" log.txt` |
 | `token-audit` | 상시 로드 토큰 측정 | `token-audit .` |
 | `secscan` | SBOM · 취약점 우선순위 · 라이선스 · 보안 설정 파일 | `secscan all .` · `secscan vuln --kev` · `secscan setup --ci` |
-| `nomad-os` | 어디서든 NOMAD 설치기 실행 | `nomad-os init <프로젝트 경로>` |
+| `nomad-os` | 어디서든 NOMAD 설치기 실행 | `nomad-os init <프로젝트 경로>` · `nomad-os module add leadgen .` |
+| `plan2spec` | 화면 표 → 사양 · 구조도 · 흐름도 · 연결도 · 와이어프레임 · 필수 구조 검사 (바뀐 화면만) | `plan2spec` · `plan2spec --strict` |
+| `spec` | 화면 · 흐름 · API · 테이블 하나만 (기획 문서 대신) | `spec S-03` · `spec changed` |
+| `shot` | 375 · 768 · 1280 · 1440 스크린샷 (Chrome · Edge, 설치 불필요) | `shot design/wireframes` · `shot http://localhost:3000` |
+| `nomad-module` | `nomad-os module`과 같음 | `nomad-module list` |
 
 `readguard` · `hook-read`는 Claude Code가 자동으로 쓰는 훅이라 직접 실행하지 않습니다.
 
@@ -77,7 +81,7 @@ flowchart LR
   end
   subgraph HOME["~/.claude (전역 · 모든 프로젝트 공유)"]
     HA["agents/ 팀 10명"]
-    HS["skills/ 8개"]
+    HS["skills/ 9개"]
     HC["commands/ 8개"]
     HN["nomad/ 규칙 + bin 도구"]
     HM["CLAUDE.md 맨 위에 @nomad/TEAM.md"]
@@ -107,11 +111,11 @@ flowchart TB
   end
   CTX --> LEAD["팀장 = 주 세션 (Opus)"]
   CMD --> LEAD
-  LEAD -- "필요 시 로드" --> SK["skills: plan-docs · design-tokens · diagram · security-baseline · stack-*"]
+  LEAD -- "필요 시 로드" --> SK["skills: plan-docs · design-tokens · ux-patterns · diagram · security-baseline · stack-*"]
   LEAD -- "위임" --> TM["agents: builder · planner · designer · tester · reviewer · scout · intern · diagrammer"]
   LEAD -- "위험 계획" --> CH["challenger"]
   LEAD -- "2회 실패" --> AD["advisor"]
-  TM --> BIN["nomad/bin 도구 (토큰 0)<br/>q · codemap · delta · plan-scaffold · design-preview<br/>deps2mmd · sql2erd · mmd-check · oss · token-audit · secscan"]
+  TM --> BIN["nomad/bin 도구 (토큰 0)<br/>q · codemap · delta · plan-scaffold · design-preview<br/>deps2mmd · sql2erd · mmd-check · oss · token-audit · secscan<br/>plan2spec · spec · shot"]
   LEAD --> BIN
   HK["settings.json 훅<br/>SessionStart · PreToolUse(Read) · PostToolUse"] --> HR["hook-read → readguard.py<br/>반복 읽기 차단 · 바뀐 줄만 전달"]
   LEAD -. "Read 할 때마다" .-> HK
@@ -165,6 +169,7 @@ nomad-agent-os/
 │   │   │   └── templates/        #     lean.md(린 검증) · prd.md · adr.md(결정 기록) · task.md(작업 1건)
 │   │   ├── design-tokens/SKILL.md#   브리프 → 토큰 → 3구간 폰트 → 미리보기 → 사람 확정
 │   │   ├── diagram/SKILL.md      #   Mermaid 작성 규칙 (ERD는 sql2erd 기계 생성)
+│   │   ├── ux-patterns/          #   화면 유형별 필수 구조(patterns.json) · 화면 표 형식 · 벤치마킹
 │   │   ├── security-baseline/    #   보안 기본: 레벨 L0~L3 판정 + references/
 │   │   │                         #     supply-chain(의존성·라이선스·SBOM) · vuln-priority(KEV·EPSS·체인·VEX)
 │   │   │                         #     threat-model(기능당 위협 메모) · agent-security(AI 키·권한) · compliance(규제·표준)
@@ -193,6 +198,9 @@ nomad-agent-os/
 │               ├── design-preview.py #   tokens.css → 미리보기 HTML · 토큰 표 (--init 시작 토큰)
 │               ├── readguard.py  #       반복 읽기 차단 훅 본체 · 바뀐 줄만 전달
 │               ├── sql2erd.py    #       SQL 마이그레이션 → Mermaid ERD
+│               ├── plan2spec.py  #       화면 표 → spec.json · 구조도 · 와이어프레임 · 필수 구조 검사 · spec 조회
+│               ├── shot.py       #       Chrome·Edge 헤드리스 3구간 스크린샷
+│               ├── modules.py    #       외부 레포 모듈 가져오기 (커밋 고정 · 허용 확장자 · 수정 보존)
 │               ├── secscan.py    #       lockfile → CycloneDX SBOM · OSV 취약점(+KEV·EPSS) · 라이선스 정책 · setup
 │               └── token-audit.py#       상시 로드 컨텍스트 토큰 추정 · 예산 초과 경고
 │
