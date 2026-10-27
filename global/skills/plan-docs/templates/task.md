@@ -5,6 +5,7 @@
 | 웨이브 | W1 |
 | 선행 | task-NNN |
 | 위험도 | 낮음 / 보통 / 높음 |
+| 보안 영향 | 없음 / 의존성 / 노출 면 / 키·권한 / 민감 데이터 (없음이 아니면 위험도 높음) |
 | 담당 | builder (+ intern: 시드) |
 | 근거 | `docs/01_PRD.md#3`, `docs/04_API.md#2.1` |
 | 쓰기 허용 | `apps/web/src/app/(dashboard)/**` |

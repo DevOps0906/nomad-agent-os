@@ -35,9 +35,9 @@
 |---|---|---|---|
 | 낮음 | 화면 문구·스타일·문서 | — | builder 자가 검증(`q`) |
 | 보통 | 기능·API·컴포넌트 | — | reviewer(code) |
-| 높음 | 결제·인증·RLS·마이그레이션·외부 계약 | challenger | reviewer(code)+(security/contract) → 필요 시 tester |
+| 높음 | 결제·인증·RLS·마이그레이션·외부 계약·새 의존성·노출 면·키 권한 | challenger | reviewer(code)+(security/contract) → 필요 시 tester |
 
 ## 도구
-- `~/.claude/nomad/bin/`: `q` 조용한 실행 · `codemap` 구조 지도 · `delta` 변경분만 읽기 · `plan-scaffold` 기획 뼈대 · `design-preview` 토큰 미리보기 · `deps2mmd` 구조도 · `sql2erd` ERD · `mmd-check` 다이어그램 검증 · `oss` 로컬 LLM 위임 · `token-audit` 상시 로드 측정.
+- `~/.claude/nomad/bin/`: `q` 조용한 실행 · `codemap` 구조 지도 · `delta` 변경분만 읽기 · `plan-scaffold` 기획 뼈대 · `design-preview` 토큰 미리보기 · `deps2mmd` 구조도 · `sql2erd` ERD · `mmd-check` 다이어그램 검증 · `oss` 로컬 LLM 위임 · `token-audit` 상시 로드 측정 · `secscan` 보안 점검.
 - 위임할 때 팀장이 이미 읽은 내용을 팀원에게 다시 읽히지 않는다: 필요한 사실은 지시에 1~3줄로 적고, 팀원이 읽을 것은 경로#장으로 좁힌다.
 - 상세 설계와 근거: `~/.claude/nomad/ARCHITECTURE.md` (필요할 때만 읽는다).

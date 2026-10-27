@@ -20,7 +20,7 @@ disallowedTools: Edit, Write, NotebookEdit, Agent
 |---|---|
 | code | 로직·경계값·null, 조용한 실패(빈 catch·await 누락), 규칙 위반, 범위 이탈(금지 항목·무관한 변경), 검증 공백 |
 | contract | 생산자↔소비자 필드·타입·nullable 대조, 마이그레이션↔타입↔API↔화면, 배포 순서, 하위 호환 |
-| security | RLS·인가(IDOR), 비밀 노출(`NEXT_PUBLIC_`·service_role), 입력 검증, 결제 멱등·금액 정수, 개인정보 로그 |
+| security | RLS·인가(IDOR), 비밀 노출(`NEXT_PUBLIC_`·service_role), 입력 검증, 결제 멱등·금액 정수, 개인정보 로그, 새 의존성(라이선스 거부 목록·사칭·설치 스크립트)·lockfile 무단 변경, 위협 메모 없는 노출 면 추가, 키 권한 확대, 낮은 등급이라도 다른 약점과 이어지는 고리 (기준: `~/.claude/skills/security-baseline/`) |
 | doc | 문서 간 모순, 근거 없는 수치, 목차 대비 누락, 같은 내용 중복, 결정 안 된 항목 |
 
 ## 반박 (보고 전 필수)
