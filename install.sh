@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # NOMAD Agent OS 설치 (macOS · Linux · Windows Git Bash)
 #   bash install.sh                 전역 설치 (~/.claude) — 모든 프로젝트에서 같은 팀 사용
-#   bash install.sh init <프로젝트>  프로젝트에 AGENTS.md · CLAUDE.md · rules · tasks 템플릿 적용(기존 파일 보존·병합)
+#   bash install.sh init <프로젝트> [--name 이름]  프로젝트에 AGENTS.md · CLAUDE.md · rules · tasks 템플릿 적용(기존 파일 보존·병합)
+#                                    이름 생략 시 폴더명. NOMAD 저장소 안의 경로는 거부
 #   옵션: --no-path (PATH 등록 안 함)  --codex (Codex CLI 전역 AGENTS.md에도 CORE 규칙 추가)
 set -euo pipefail
 SRC="$(cd "$(dirname "$0")" && pwd)"
@@ -51,7 +52,19 @@ append_line() { # append_line <파일> <줄> : 마지막 줄바꿈을 보장하�
 }
 
 if [ "${1:-}" = "init" ]; then
-  P="${2:-.}"; mkdir -p "$P"; P="$(cd "$P" && pwd)"; PBK="$P/.nomad/backup-$TS"
+  shift; P="."; NAME=""
+  while [ $# -gt 0 ]; do case "$1" in --name) shift; NAME="${1:-}" ;; *) P="$1" ;; esac; shift; done
+  # 안전장치: NOMAD 저장소 자체나 그 하위 폴더에는 적용하지 않는다(원본 저장소 오염 방지)
+  low() { printf '%s' "$1" | tr '[:upper:]' '[:lower:]'; }   # Windows 대소문자 무시 비교
+  inside_src() { case "$(low "$1")/" in "$(low "$SRC")/"*) return 0 ;; esac; return 1; }
+  refuse() { rmdir "$1" 2>/dev/null || true; echo "❌ 대상 경로가 NOMAD 저장소($SRC) 안입니다: $1"
+    echo "   프로젝트는 저장소 밖에 두세요. 예: bash $SRC/install.sh init /d/WorkSpace/DEV/<프로젝트>"; exit 1; }
+  case "$P" in /*|[A-Za-z]:*) PA="$P" ;; *) PA="$PWD/$P" ;; esac
+  inside_src "$PA" && refuse "$PA"                          # 폴더를 만들기 전에 1차 검사
+  mkdir -p "$P" && PA="$(cd "$P" && pwd)" || { echo "❌ 폴더를 만들 수 없습니다: $P"; exit 1; }
+  inside_src "$PA" && refuse "$PA"                          # ../ 나 링크로 우회한 경우 2차 검사
+  P="$PA"; PBK="$P/.nomad/backup-$TS"; NAME="${NAME:-$(basename "$P")}"
+  NEW_AGENTS=0; [ -e "$P/AGENTS.md" ] || NEW_AGENTS=1
   echo "■ 프로젝트 템플릿 → $P (기존 파일은 보존, 필요한 줄만 병합)"
   (cd "$SRC/project-template" && find . -type f ! -name .gitignore) | while read -r f; do
     if [ -e "$P/$f" ]; then
@@ -65,7 +78,11 @@ if [ "${1:-}" = "init" ]; then
     else mkdir -p "$P/$(dirname "$f")"; cp "$SRC/project-template/$f" "$P/$f"; echo "  + 생성  ${f#./}"; fi
   done
   while read -r line; do append_line "$P/.gitignore" "$line" && echo "  + .gitignore: $line"; done < "$SRC/project-template/.gitignore"
-  echo "■ 다음: AGENTS.md 의 <프로젝트명>·스택·명령·고유 규칙을 채우고 \`claude\` → /plan 또는 /next"
+  # 새로 만든 AGENTS.md 에만 프로젝트명 치환(기존 파일은 건드리지 않음). sed 대신 bash 치환이라 이름에 / & 가 있어도 안전
+  if [ "$NEW_AGENTS" = 1 ]; then
+    c="$(cat "$P/AGENTS.md")"; printf '%s\n' "${c//<프로젝트명>/"$NAME"}" > "$P/AGENTS.md"; echo "  + AGENTS.md 프로젝트명: $NAME"
+  fi
+  echo "■ 다음: AGENTS.md 의 스택·명령·고유 규칙을 채우고 \`claude\` → /plan 또는 /next"
   exit 0
 fi
 
