@@ -1,13 +1,13 @@
 # 모듈 — 필요할 때 외부 레포에서 가져오기
 
-NOMAD 본체에는 **구조(형식 · 가져오는 장치 · 검사기)**만 있습니다. 도메인 기획 청사진(리드젠 · CRM · ERP · LMS)과 L3 보안 팩은 **별도 깃허브 레포**에 있고, 프로젝트에 필요할 때만 가져옵니다.
+NOMAD 본체에는 **구조(형식 · 가져오는 장치 · 검사기)**만 있습니다. 도메인 기획 청사진(Funnel · CRM · ERP · LMS)과 L3 보안 팩은 **별도 깃허브 레포**에 있고, 프로젝트에 필요할 때만 가져옵니다.
 
 ```bash
 nomad-os module list [프로젝트]                     # 등록된 모듈 · 설치 상태
-nomad-os module add leadgen <프로젝트>              # 가져오기 (커밋 고정)
-nomad-os module update leadgen <프로젝트>           # 새 버전 (내가 고친 파일은 보존 → .upstream)
+nomad-os module add funnel <프로젝트>              # 가져오기 (커밋 고정)
+nomad-os module update funnel <프로젝트>           # 새 버전 (내가 고친 파일은 보존 → .upstream)
 nomad-os module update all <프로젝트>
-nomad-os module remove leadgen <프로젝트>           # 고치지 않은 파일만 삭제
+nomad-os module remove funnel <프로젝트>           # 고치지 않은 파일만 삭제
 nomad-os module add <이름> <프로젝트> --from <로컬 경로>   # 레포 없이 로컬에서 (개발 · 시험용)
 nomad-os module add https://github.com/<계정>/<레포>.git#<하위 경로> <프로젝트>   # 등록 안 된 레포
 ```
@@ -28,8 +28,8 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 
 ## 3. 기록 — `nomad-modules.json` (프로젝트 루트, 커밋 권장)
 ```json
-{ "modules": { "leadgen": { "source": "https://github.com/…/nomad-blueprints.git", "ref": "v0.1.0",
-  "commit": "48080bc…", "install_to": "docs/blueprints/leadgen", "files": { "screens.md": "<sha256>" } } } }
+{ "modules": { "funnel": { "source": "https://github.com/…/nomad-blueprints.git", "ref": "v0.1.0",
+  "commit": "48080bc…", "install_to": "docs/blueprints/funnel", "files": { "screens.md": "<sha256>" } } } }
 ```
 - **커밋까지 고정** — 같은 기록으로 팀원 · CI가 같은 내용을 받습니다.
 - 파일 해시로 "내가 고친 파일"을 구분합니다. 업데이트가 내 수정을 덮지 않고, 새 버전은 `<파일>.upstream`으로 둡니다.

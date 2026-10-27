@@ -58,7 +58,7 @@ Claude Code에서 `/agents`로 확인합니다. 팀장이 알아서 나눠 맡�
 | `oss` | 로컬 LLM에 맡기기 | `oss "3줄 요약" log.txt` |
 | `token-audit` | 상시 로드 토큰 측정 | `token-audit .` |
 | `secscan` | SBOM · 취약점 우선순위 · 라이선스 · 보안 설정 파일 | `secscan all .` · `secscan vuln --kev` · `secscan setup --ci` |
-| `nomad-os` | 어디서든 NOMAD 설치기 실행 | `nomad-os init <프로젝트 경로>` · `nomad-os module add leadgen .` |
+| `nomad-os` | 어디서든 NOMAD 설치기 실행 | `nomad-os init <프로젝트 경로>` · `nomad-os module add funnel .` |
 | `plan2spec` | 화면 표 → 사양 · 구조도 · 흐름도 · 연결도 · 와이어프레임 · 필수 구조 검사 (바뀐 화면만) | `plan2spec` · `plan2spec --strict` |
 | `spec` | 화면 · 흐름 · API · 테이블 하나만 (기획 문서 대신) | `spec S-03` · `spec changed` |
 | `shot` | 375 · 768 · 1280 · 1440 스크린샷 (Chrome · Edge, 설치 불필요) | `shot design/wireframes` · `shot http://localhost:3000` |

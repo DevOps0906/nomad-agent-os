@@ -23,7 +23,7 @@ flowchart LR
 
 | 단계 | 명령 | 결과 |
 |---|---|---|
-| 기획 표 작성 | `/plan` (또는 `nomad-os module add leadgen .`) | `docs/03_SCREENS_UX.md` |
+| 기획 표 작성 | `/plan` (또는 `nomad-os module add funnel .`) | `docs/03_SCREENS_UX.md` |
 | 해석 · 생성 · 검사 | `plan2spec` | `design/spec.json` · `docs/diagrams/*.mmd` · `design/wireframes/` · 🔴 목록 |
 | 화면 하나 보기 | `spec S-03` | 구성 · 상태 · 흐름 · API · 데이터 · 시안 경로 (≈15줄) |
 | 디자인 토큰 | `/design` | `tokens.css` → 미리보기 · 대비 검사 · 시안 자동 갱신 |
@@ -67,7 +67,7 @@ flowchart LR
 | 보드 | 단계 열 · 단계 이동 · 필터 · 카드→상세 |
 | 마법사 · 설정 · 로그인 · 랜딩 | 단계 표시·이전/다음 · 구역·저장 · 입력·대체 링크 · 히어로·CTA·푸터 |
 
-권장(🟡)까지 전체 기준은 `~/.claude/skills/ux-patterns/patterns.json`. 모듈은 도메인 필수 구조를 더할 수 있습니다(예: 리드젠 대시보드는 퍼널 차트 · 채널별 CPL · 응답 지연 리드가 필수).
+권장(🟡)까지 전체 기준은 `~/.claude/skills/ux-patterns/patterns.json`. 모듈은 도메인 필수 구조를 더할 수 있습니다(예: Funnel 대시보드는 퍼널 차트 · 채널별 CPL · 응답 지연 리드가 필수).
 
 ---
 

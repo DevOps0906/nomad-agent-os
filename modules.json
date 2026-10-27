@@ -1,9 +1,9 @@
 {
   "_doc": "NOMAD 모듈 등록 목록 — 내용은 외부 레포에 있고 'nomad-os module add <이름> <프로젝트>'로 필요할 때 가져온다. status=planned 는 레포 준비 전.",
   "modules": {
-    "leadgen": {
-      "repo": "https://github.com/DevOps0906/nomad-blueprints.git", "path": "leadgen", "ref": "main", "type": "blueprint",
-      "status": "planned", "desc": "리드젠·퍼널 마케팅 — 랜딩·폼·동의·점수·육성·파이프라인·퍼널 대시보드"
+    "funnel": {
+      "repo": "https://github.com/DevOps0906/nomad-blueprints.git", "path": "funnel", "ref": "main", "type": "blueprint",
+      "status": "planned", "desc": "Funnel(퍼널 마케팅) — 랜딩·폼·동의·점수·육성·파이프라인·퍼널 대시보드"
     },
     "crm": {
       "repo": "https://github.com/DevOps0906/nomad-blueprints.git", "path": "crm", "ref": "main", "type": "blueprint",
