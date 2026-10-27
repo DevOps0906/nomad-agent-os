@@ -1,4 +1,4 @@
-# NOMAD CORE — 모든 AI 코딩 도구 공통 원칙 (Claude Code · Codex · OpenCode · Gemini CLI)
+# NOMAD CORE — 모든 AI 코딩 도구 공통 원칙 (Claude Code · ChatGPT Codex · Gemini CLI · OpenCode)
 
 - 응답·문서·커밋 메시지는 한국어, 코드 식별자는 영어.
 - UI는 항상 반응형 3구간: 모바일 ~767 / 태블릿 768~1199 / 데스크톱 1200~. 구간별 폰트 크기를 토큰으로 지정한다.
@@ -14,7 +14,7 @@
 - **다시 읽지 않기**: 이 대화에서 이미 읽은 파일은 맥락에 있다 — 다시 읽지 않는다. 읽은 뒤 바뀐 파일은 바뀐 줄만,
   부분만 읽은 파일은 안 읽은 범위만 offset/limit로. 새 세션은 `delta --changed`(체크포인트 이후 바뀐 파일 목록)로 시작한다.
   Claude Code는 readguard 훅이 강제한다(재읽기 차단, 바뀐 파일은 차단 메시지로 바뀐 줄만 전달).
-  다른 도구(Codex·OpenCode 등)는 `delta <파일>`로 바뀐 줄만 본다.
+  다른 도구(ChatGPT Codex·Gemini CLI·OpenCode 등)는 `delta <파일>`로 바뀐 줄만 본다.
 - 읽기: 구조 먼저(`codemap`), 필요한 함수·장만. 파일 전체 통독은 100줄 이하일 때만.
 - 실행: 긴 출력 명령은 `q`(조용한 실행)로 감싼다 → 실패 줄과 요약만 본다. 전체 로그는 `.nomad/logs/`.
 - 쓰기: 문서 내용을 지시문에 붙여 넣지 않는다. **경로 + 장 번호**만 넘긴다.

@@ -1,7 +1,7 @@
 # AGENTS.md — <프로젝트명>
 
-> 모든 AI 코딩 도구(Claude Code · Codex · OpenCode · Gemini CLI · Cursor)가 읽는 **단일 정본**. 80줄 이내로 유지한다.
-> 영역별 상세 규칙은 `.claude/rules/*.md`(해당 경로 작업 때만 로드), 기획 근거는 `docs/`.
+> 모든 AI 코딩 도구(Claude Code · ChatGPT Codex · Gemini CLI · OpenCode · Cursor)가 읽는 **단일 정본**. 80줄 이내로 유지한다.
+> 영역별 상세 규칙은 `.claude/rules/*.md`(7장 표), 기획 근거는 `docs/`.
 
 ## 1. 무엇인가
 <한 문장: 누구를 위한 무엇>. 기획 정본: `docs/01_PRD.md` · 구조: `docs/02_ARCHITECTURE.md`.
@@ -45,3 +45,15 @@
 ## 6. 작업 방식
 작업은 `tasks/README.md`의 순서대로 하나씩. 작업 파일의 "근거"와 "하지 않을 것"을 지키고, 완료 조건을 실행으로 확인한 뒤 커밋한다.
 커밋: `[task-NNN] 요약` + 본문(무엇을 · 확인 방법).
+
+## 7. 영역 규칙 · 도구별 로드 (규칙 정본은 `.claude/rules/` 한 곳)
+아래 경로의 파일을 만들거나 고치기 **전에** 해당 규칙 파일을 읽는다. Claude Code는 `paths:` 조건으로 자동 로드하므로 다시 읽지 않는다.
+| 작업 경로 | 규칙 파일 |
+|---|---|
+| `apps/web/**` | `.claude/rules/web.md` |
+| `apps/api/**` | `.claude/rules/api.md` |
+| `supabase/**` | `.claude/rules/db.md` |
+| `docs/**` · `DESIGN.md` | `.claude/rules/docs.md` |
+- 읽지 않는 파일: `.env*` · lock 파일 · `node_modules/` · `.next/` · `dist/` · `build/` · `coverage/` (Claude는 `.claude/settings.json`, Gemini는 `.geminiignore`가 강제, ChatGPT Codex는 이 줄로 지킨다).
+- 도구별 설정: Claude Code `CLAUDE.md`·`.claude/` · ChatGPT Codex `.codex/config.toml` · Gemini CLI `.gemini/settings.json`·`.geminiignore`.
+- 새 규칙 파일을 추가하면 이 표에도 한 줄 추가한다.

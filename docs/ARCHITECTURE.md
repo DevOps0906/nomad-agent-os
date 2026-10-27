@@ -1,6 +1,6 @@
 # NOMAD Agent OS — 최종 멀티에이전트 구조 설계서
 
-> 작성 2026-10-27 · 대상 Claude Code (v2.1.271 이상 권장) · 호환 Codex CLI · OpenCode · Gemini CLI · Ollama
+> 작성 2026-10-27 · 대상 Claude Code (v2.1.271 이상 권장) · 호환 ChatGPT Codex · Gemini CLI · OpenCode · Ollama · 설치 Git Bash · PowerShell
 > 분석 대상: `platform-docs`, `tablet-kiosk-core`, `MultiAgent-Service-Fullstack-Tree-Framwork`(이하 M), `Java-Service-Tree-Framework-Multi-Agent-Workspace`(이하 J)
 > 이 문서는 필요할 때만 읽는다(상시 로드 아님).
 
@@ -77,11 +77,12 @@
         └── py/                    파이썬 도구 본체
 
 <프로젝트>/                        ← install.sh init 으로 복사(기존 파일 보존)
-├── AGENTS.md                      단일 정본: 스택·명령·절대 규칙·문서 지도 (80줄 이내)
+├── AGENTS.md                      단일 정본: 스택·명령·절대 규칙·문서 지도·영역 규칙 표 (80줄 이내)
 ├── CLAUDE.md                      @AGENTS.md + Claude 전용 차이 3줄
 ├── .claude/settings.json          모델 + 무거운 폴더·.env 읽기 금지
 ├── .claude/rules/{db,web,api,docs}.md   경로 조건 규칙(해당 경로 작업 때만 로드)
-├── .gemini/settings.json          Gemini CLI가 AGENTS.md를 읽도록
+├── .codex/config.toml             ChatGPT Codex 샌드박스·승인 설정 (신뢰한 프로젝트)
+├── .gemini/settings.json · .geminiignore   Gemini CLI가 AGENTS.md를 읽도록 · 읽기 제외
 ├── tasks/README.md · NOW.md       작업 표 · 재진입 스냅샷(30줄)
 └── docs/ (plan-scaffold)          00_LEAN ~ 05_DATA_MODEL · adr/ · diagrams/*.mmd
 ```
@@ -233,7 +234,10 @@ sequenceDiagram
 | 계층 | 방법 | 효과 |
 |---|---|---|
 | 지시 파일 | 정본 `AGENTS.md` — Codex CLI·OpenCode·Cursor·Copilot이 기본으로 읽고, Gemini CLI는 `.gemini/settings.json`의 `context.fileName`으로 읽음. Claude Code는 `CLAUDE.md`의 `@AGENTS.md` import | 도구를 바꿔도 같은 규칙, 중복 0 |
-| 전역 원칙 | `install.sh --codex` → `~/.codex/AGENTS.md`에 CORE 추가 | Codex 세션도 같은 토큰 규칙 |
+| 영역 규칙 | 정본 `.claude/rules/*.md` 한 곳. Claude는 `paths:`로 자동 로드, Codex·Gemini는 `AGENTS.md` 7장 "작업 경로 → 규칙 파일" 표를 보고 읽음 | 규칙 복제 없이 세 도구가 같은 영역 규칙 |
+| 도구별 설정 | Codex `.codex/config.toml`(샌드박스·승인), Gemini `.gemini/settings.json`(`context.fileName` = AGENTS.md·GEMINI.md) + `.geminiignore`(Claude의 읽기 차단과 같은 목록) | 읽기 금지 범위가 도구마다 같음 |
+| 전역 원칙 | `install --codex` → `~/.codex/AGENTS.md`, `--gemini` → `~/.gemini/GEMINI.md`에 CORE 추가 | ChatGPT·Gemini 세션도 같은 토큰 규칙 |
+| Windows 셸 | `install.ps1`이 Git Bash로 `install.sh` 실행 + `bin-win/*.cmd` 래퍼 | PowerShell·cmd에서도 같은 명령 이름 |
 | 도구 스크립트 | `bin/`의 모든 도구는 bash + Python 표준 라이브러리 + git | 어떤 CLI 에이전트에서도 Bash로 그대로 사용 |
 | 로컬 LLM 위임 | `oss "<지시>" <파일> -o 결과.md` — OpenAI 호환 API(Ollama 기본 `localhost:11434/v1`, LM Studio·vLLM 가능) | 요약·추출·번역·커밋 메시지·Mermaid 초안을 유료 토큰 0으로 |
 | 전체 세션을 로컬 모델로 | `ANTHROPIC_BASE_URL=http://localhost:11434 ANTHROPIC_AUTH_TOKEN=ollama claude --model <모델>` + `CLAUDE_CODE_SUBAGENT_MODEL=<모델>` `CLAUDE_CODE_SUBAGENT_MODEL_FORCE=1` (에이전트 파일의 Claude 모델 ID를 무시) | 에이전트 정의를 고치지 않고 전환 |

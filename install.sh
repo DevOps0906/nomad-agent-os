@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # NOMAD Agent OS 설치 (macOS · Linux · Windows Git Bash)
 #   bash install.sh                 전역 설치 (~/.claude) — 모든 프로젝트에서 같은 팀 사용
-#   bash install.sh init <프로젝트> [--name 이름]  프로젝트에 AGENTS.md · CLAUDE.md · rules · tasks 템플릿 적용(기존 파일 보존·병합)
+#   bash install.sh init <프로젝트> [--name 이름]  프로젝트에 AGENTS.md · CLAUDE.md · rules · tasks · Codex·Gemini 설정 적용(기존 파일 보존·병합)
 #                                    이름 생략 시 폴더명. NOMAD 저장소 안의 경로는 거부
-#   옵션: --no-path (PATH 등록 안 함)  --codex (Codex CLI 전역 AGENTS.md에도 CORE 규칙 추가)
+#   옵션: --no-path (PATH 등록 안 함)  --codex (ChatGPT Codex 전역 ~/.codex/AGENTS.md에 CORE 추가)
+#         --gemini (Gemini CLI 전역 ~/.gemini/GEMINI.md에 CORE 추가)
 set -euo pipefail
 SRC="$(cd "$(dirname "$0")" && pwd)"
 CL="$HOME/.claude"; TS=$(date +%Y%m%d-%H%M%S); BK="$CL/.nomad-backup/$TS"
@@ -66,7 +67,7 @@ if [ "${1:-}" = "init" ]; then
   P="$PA"; PBK="$P/.nomad/backup-$TS"; NAME="${NAME:-$(basename "$P")}"
   NEW_AGENTS=0; [ -e "$P/AGENTS.md" ] || NEW_AGENTS=1
   echo "■ 프로젝트 템플릿 → $P (기존 파일은 보존, 필요한 줄만 병합)"
-  (cd "$SRC/project-template" && find . -type f ! -name .gitignore) | while read -r f; do
+  (cd "$SRC/project-template" && find . -type f ! -name .gitignore ! -name .geminiignore) | while read -r f; do
     if [ -e "$P/$f" ]; then
       case "$f" in
         ./CLAUDE.md)
@@ -77,7 +78,9 @@ if [ "${1:-}" = "init" ]; then
       esac
     else mkdir -p "$P/$(dirname "$f")"; cp "$SRC/project-template/$f" "$P/$f"; echo "  + 생성  ${f#./}"; fi
   done
-  while read -r line; do append_line "$P/.gitignore" "$line" && echo "  + .gitignore: $line"; done < "$SRC/project-template/.gitignore"
+  for ig in .gitignore .geminiignore; do   # 줄 단위 병합(없는 줄만 추가)
+    while read -r line; do append_line "$P/$ig" "$line" && echo "  + $ig: $line"; done < "$SRC/project-template/$ig"
+  done
   # 새로 만든 AGENTS.md 에만 프로젝트명 치환(기존 파일은 건드리지 않음). sed 대신 bash 치환이라 이름에 / & 가 있어도 안전
   if [ "$NEW_AGENTS" = 1 ]; then
     c="$(cat "$P/AGENTS.md")"; printf '%s\n' "${c//<프로젝트명>/"$NAME"}" > "$P/AGENTS.md"; echo "  + AGENTS.md 프로젝트명: $NAME"
@@ -126,11 +129,14 @@ if [[ " $* " != *" --no-path "* ]]; then
   append_line "$RC" 'export PATH="$HOME/.claude/nomad/bin:$PATH"' && echo "  + PATH 등록 ($RC) — 새 터미널부터 q·delta·codemap 이름만으로 실행" || true
 fi
 
-# 5) Codex CLI (선택)
-if [[ " $* " == *" --codex "* ]]; then
-  CX="$HOME/.codex/AGENTS.md"; mkdir -p "$HOME/.codex"
-  if ! grep -q "NOMAD CORE" "$CX" 2>/dev/null; then { echo; cat "$CL/nomad/CORE.md"; } >> "$CX"; echo "  + Codex 전역 AGENTS.md 에 CORE 규칙 추가"; fi
-fi
+# 5) 다른 AI 도구 전역 지시 파일에 CORE 추가 (선택): --codex = ChatGPT Codex, --gemini = Gemini CLI
+add_core() { # add_core <전역 지시 파일> <도구 이름>
+  mkdir -p "$(dirname "$1")"
+  if grep -q "NOMAD CORE" "$1" 2>/dev/null; then echo "  · 유지  $1 ($2, CORE 있음)"
+  else { [ -s "$1" ] && echo; cat "$CL/nomad/CORE.md"; } >> "$1"; echo "  + $2 전역 지시 파일에 CORE 규칙 추가 ($1)"; fi
+}
+[[ " $* " == *" --codex "* ]] && add_core "$HOME/.codex/AGENTS.md" "ChatGPT Codex"
+[[ " $* " == *" --gemini "* ]] && add_core "$HOME/.gemini/GEMINI.md" "Gemini CLI"
 
 echo "■ 완료. 확인: ~/.claude/nomad/bin/token-audit <프로젝트>   ·   Claude Code에서 /agents 로 팀 10명 확인"
 [ -d "$BK" ] && echo "  (교체·병합 전 원본 백업: $BK)"
