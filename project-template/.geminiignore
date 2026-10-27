@@ -11,3 +11,7 @@ coverage/
 *.lock
 pnpm-lock.yaml
 package-lock.json
+*.pem
+*.key
+*.p12
+*.pfx
