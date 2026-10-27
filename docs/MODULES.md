@@ -13,6 +13,23 @@ nomad-os module add https://github.com/<계정>/<레포>.git#<하위 경로> <�
 ```
 PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 실행 가능).
 
+## 0. 지금 연결된 모듈 레포
+
+| 레포 | 용도 | 브랜치 | 공개 |
+|---|---|---|---|
+| [nomad-blueprints-module](https://github.com/DevOps0906/nomad-blueprints-module) | 도메인 기획 청사진 — 모듈마다 폴더 하나 | `main` | 비공개 |
+| [nomad-secure-pack-module](https://github.com/DevOps0906/nomad-secure-pack-module) | 보안 L3 (납품 · 규제) | `main` | 비공개 |
+
+| 모듈 (`add` 이름) | 레포 · 위치 | 버전 | 상태 | 내용 |
+|---|---|---|---|---|
+| `funnel` | blueprints-module · `funnel/` | 0.1.0 | ✅ 사용 가능 | 퍼널 마케팅 — 화면 12 · 흐름 5 · API 11 · 테이블 16 · 전용 필수 구조 |
+| `secure-pack` | secure-pack-module · `/` | 0.0.1 | 🟡 뼈대 | 구조 계획만 — OpenChain · 정책 · VEX · SPDX · CRA · 공공 제출 순서로 채울 예정 |
+| `crm` · `erp` · `lms` | blueprints-module · `crm/` `erp/` `lms/` | — | ⏳ 예정 | 등록만 됨 (폴더 없음) |
+
+- **비공개 레포**라서 GitHub에 로그인된 PC(Git Credential Manager · `gh auth login`)에서만 가져올 수 있습니다.
+- **넣는 기준:** 도메인 기획 청사진은 모두 blueprints-module, 보안 납품·규제 자료는 secure-pack-module. 공개 범위나 관리 주체가 다를 때만 레포를 따로 만듭니다.
+- 모듈 내용은 **본체에 복사하지 않습니다**(같은 내용이 두 곳에 생기면 어긋남). 본체에는 등록 목록(`modules.json`)만 있습니다.
+
 ---
 
 ## 1. 모듈 종류
@@ -28,8 +45,8 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 
 ## 3. 기록 — `nomad-modules.json` (프로젝트 루트, 커밋 권장)
 ```json
-{ "modules": { "funnel": { "source": "https://github.com/…/nomad-blueprints-module.git", "ref": "v0.1.0",
-  "commit": "48080bc…", "install_to": "docs/blueprints/funnel", "files": { "screens.md": "<sha256>" } } } }
+{ "modules": { "funnel": { "source": "https://github.com/DevOps0906/nomad-blueprints-module.git", "ref": "main",
+  "commit": "75bbc38…", "install_to": "docs/blueprints/funnel", "files": { "screens.md": "<sha256>" } } } }
 ```
 - **커밋까지 고정** — 같은 기록으로 팀원 · CI가 같은 내용을 받습니다.
 - 파일 해시로 "내가 고친 파일"을 구분합니다. 업데이트가 내 수정을 덮지 않고, 새 버전은 `<파일>.upstream`으로 둡니다.
@@ -57,7 +74,11 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 각 프로젝트의 정확한 라이선스는 사용 시점에 원문으로 확인하세요.
 
 ## 6. 새 모듈 만들기
-`nomad-blueprints-module/README.md`의 "모듈 형식"을 따릅니다. 만든 뒤 검증:
+1. `nomad-blueprints-module/<이름>/`에 파일을 만듭니다 — 형식은 그 레포 README의 "모듈 형식"(funnel이 예시).
+2. 검증(아래) → 커밋 → push → 필요하면 `<이름>-v0.1.0` 태그.
+3. 본체 `modules.json`에 등록(또는 `status: planned` 제거) → 본체 커밋 · push → 각 PC에서 `install.ps1` 재실행.
+
+검증:
 ```bash
 mkdir -p /tmp/t/docs && nomad-os module add <이름> /tmp/t --from <nomad-blueprints-module 경로> && cd /tmp/t && plan2spec --strict
 ```

@@ -110,7 +110,7 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | [시작하기](docs/GETTING_STARTED.md) | 기존 저장소에 적용 / 처음부터 시작, 단계별 |
 | [AI 도구 같이 쓰기](docs/MULTI_AI.md) | ChatGPT · Gemini도 쓸 때 |
 | [기획 → 구조도 · 시안](docs/DESIGN.md) | plan2spec · 필수 구조 검사 · 대비 · 3구간 스크린샷 |
-| [모듈](docs/MODULES.md) | Funnel · CRM · ERP · LMS 청사진, L3 보안 팩을 외부 레포에서 가져오기 |
+| [모듈](docs/MODULES.md) | Funnel · CRM · ERP · LMS 청사진([blueprints-module](https://github.com/DevOps0906/nomad-blueprints-module)), L3 보안 팩([secure-pack-module](https://github.com/DevOps0906/nomad-secure-pack-module))을 필요할 때 가져오기 |
 | [보안 가이드](docs/SECURITY.md) | 보안 레벨 · `/secure` · SBOM · 라이선스 · 취약점 우선순위 |
 | [레퍼런스](docs/REFERENCE.md) | 명령 · 팀 · 도구 · 폴더 구조 |
 | [예시: SceneFlow](docs/examples/SCENEFLOW.md) | 기획 문서만 있는 저장소에 적용한 실제 사례 |

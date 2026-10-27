@@ -70,6 +70,35 @@ Claude Code에서 `/agents`로 확인합니다. 팀장이 알아서 나눠 맡�
 
 ## 4. 구조
 
+### 레포 구성 — 본체 + 필요할 때 가져오는 모듈 레포
+```mermaid
+flowchart LR
+  subgraph CORE["nomad-agent-os (본체)"]
+    REG["modules.json<br/>등록 목록"]
+    TOOL["plan2spec · secscan<br/>modules.py"]
+  end
+  subgraph BP["nomad-blueprints-module"]
+    FN["funnel/ ✅"]
+    CR["crm/ · erp/ · lms/ ⏳"]
+  end
+  subgraph SP["nomad-secure-pack-module"]
+    SEC["L3 보안 팩 🟡 뼈대"]
+  end
+  REG -. "가리킴" .-> BP
+  REG -. "가리킴" .-> SP
+  PJ["내 프로젝트"]
+  FN -- "module add funnel" --> PJ
+  SEC -- "module add secure-pack" --> PJ
+  TOOL -- "plan2spec · secscan" --> PJ
+```
+| 레포 | 담는 것 | 담지 않는 것 |
+|---|---|---|
+| [nomad-agent-os](https://github.com/DevOps0906/nomad-agent-os) | 팀 · 스킬 · 명령 · 도구 · 검사 규칙 · 모듈 등록 목록 | 도메인 청사진 · L3 보안 자료 |
+| [nomad-blueprints-module](https://github.com/DevOps0906/nomad-blueprints-module) | 도메인 기획 청사진 (화면 · API · 데이터 표 · 도메인 필수 구조) | 코드 · 스크립트 · 보안 자료 |
+| [nomad-secure-pack-module](https://github.com/DevOps0906/nomad-secure-pack-module) | L3 납품 · 규제 자료 (OpenChain · VEX · SPDX · CRA) | 청사진 · 코드 |
+
+자세히는 → [모듈](MODULES.md)
+
 ### 설치 구조 — 어디에서 어디로 복사되나
 ```mermaid
 flowchart LR

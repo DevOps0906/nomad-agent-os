@@ -14,7 +14,7 @@ PRD `## 8. 보안·공급망`에 적습니다. `/plan`을 쓰면 planner가 자�
 | **L0 기본** | 모든 프로젝트 (자동) | 비밀 커밋 금지 · lockfile 커밋 · 새 의존성 점검 · 기능마다 위협 메모 · 보안 리뷰 | 그냥 쓰면 적용 |
 | **L1 저장소** | GitHub 저장소가 생기면 | Dependabot · 의존성 그래프 · 비밀 스캔 · `SECURITY.md` | `/secure setup` |
 | **L2 배포** | 배포 파이프라인이 생기면 | 릴리스마다 SBOM 보관 · 취약점 스캔 · 라이선스 점검 | `/secure setup --ci` |
-| **L3 납품·규제** | 공공 · 금융 · 대기업 · EU 판매 협의 | VEX · SPDX · OpenChain ISO 5230/18974 · CRA | 별도 팩 (준비 중) |
+| **L3 납품·규제** | 공공 · 금융 · 대기업 · EU 판매 협의 | VEX · SPDX · OpenChain ISO 5230/18974 · CRA | `nomad-os module add secure-pack .` ([레포](https://github.com/DevOps0906/nomad-secure-pack-module), 현재 뼈대 — 내용 준비 중) |
 
 **어떤 레벨인지 모르겠다면** 세 가지만 답합니다. 하나라도 "예"면 L3를 검토합니다.
 1. 고객이 공공 · 금융 · 대기업인가?
@@ -122,7 +122,7 @@ AGPL은 네트워크로 서비스만 해도 소스 공개 의무가 생길 수 �
 | 인터넷 노출 자산 우선 | PRD 보안 절의 노출 면 + 기능별 위협 메모 |
 | AIBOM · AI 에이전트 권한 | `docs/AI_INVENTORY.md` 양식(키 · 도구 · 데이터 · 승인) + 최소 권한 원칙 |
 | 공공 2027 · EU CRA | `compliance.md`에 기준일과 함께 정리 (일정은 바뀌므로 협의 시 재확인) |
-| OpenChain ISO 5230 · 18974 | L3 별도 팩에서 자가 체크리스트로 다룰 예정 |
+| OpenChain ISO 5230 · 18974 | L3 `secure-pack` 모듈에서 자가 체크리스트로 다룰 예정 ([모듈](MODULES.md)) |
 
 자세한 기준은 Claude가 필요할 때 읽는 스킬 `~/.claude/skills/security-baseline/`에 있습니다.
 
