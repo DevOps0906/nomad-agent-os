@@ -51,6 +51,53 @@ Claude Code에서 `/agents`를 열어 팀 10명이 보이면 끝입니다.
 
 **업데이트:** 받은 폴더에서 `git pull && bash install.sh` — 다시 실행해도 훅·import는 중복 추가되지 않습니다.
 
+| 언제 | 할 일 |
+|---|---|
+| PC마다 한 번 | 이 저장소 clone → `bash install.sh` (전역 설치) |
+| 프로젝트마다 | `install.sh init <프로젝트 경로> [--name 이름]` 한 줄 |
+| NOMAD 업데이트 시 | 이 저장소에서 `git pull && bash install.sh` |
+
+> 팀(에이전트)·스킬·도구는 `~/.claude`에 있어 모든 프로젝트가 같이 씁니다. 프로젝트에는 그 프로젝트 전용 규칙 파일만 들어갑니다.
+
+## 시작하기 — 두 가지 방식
+
+### A. 이미 GitHub 저장소(코드)가 있을 때
+```bash
+cd ~/work
+git clone https://github.com/<계정>/<저장소>.git                  # 1) 먼저 clone
+bash ~/work/nomad-agent-os/install.sh init ~/work/<저장소>       # 2) 그 폴더에 init
+cd <저장소> && claude
+```
+1. **`AGENTS.md`를 실제 코드에 맞추기 (가장 중요)** — 템플릿의 스택·명령(`pnpm dev` 등)은 예시입니다. `/check`·`/next`가 이 명령 표를 그대로 실행하므로 Claude에게 *"이 저장소를 분석해서 AGENTS.md의 스택·명령 표를 실제에 맞게 채워줘"*라고 맡깁니다.
+2. **현재 구조 파악** — `/diagram 코드 구조도`(import 분석 → `docs/diagrams/architecture.mmd`), DB가 있으면 `/diagram erd`, `/check`로 린트·테스트가 도는지 확인.
+3. **작업 표 만들기** — `/next`는 `tasks/README.md`를 따라 움직입니다(템플릿의 `task-001`은 예시). 새 기능이면 `/plan 기능명`, 작은 수정이면 *"tasks/README.md에 작업 등록해줘: ①… ②…"*.
+4. **개발 반복** — `/next` → `/clear` → `/next` …
+5. **커밋** — `git add -A && git commit -m "Add NOMAD agent config" && git push`
+
+### B. 아무것도 없이 기획부터 시작할 때
+```bash
+bash ~/work/nomad-agent-os/install.sh init ~/work/<프로젝트> --name "<제품명>"   # 폴더가 없으면 생성
+cd ~/work/<프로젝트> && git init -b main && claude
+```
+1. **기획** — `/plan <제품명>`: `docs/`에 문서 뼈대 8개(00_LEAN · 01_PRD · 02_ARCHITECTURE · 03_SCREENS_UX · 04_API · 05_DATA_MODEL · adr · diagrams) 생성.
+   **00_LEAN(린 검증)부터** 진행하며, 통과 전에는 개발 작업을 만들지 않습니다. 제품 방향 질문만 사용자에게 묻고, 섹션은 planner들이 병렬로 채운 뒤 reviewer가 점검합니다. 마지막에 `tasks/task-NNN.md`가 자동 생성됩니다.
+2. **그림 (선택)** — `/diagram 회원가입 흐름` · `/diagram 결제 시퀀스`
+3. **디자인** — `/design`: 브리프(대상 · 주된 일 · 분위기 3단어 · 피할 것) → 시작 `tokens.css`(반응형 3구간 폰트) → **미리보기 HTML 자동 생성**. 브라우저로 보고 *"주색 더 진하게"*처럼 요청하면 토큰만 수정됩니다. **확정 전에는 화면 구현을 시작하지 않습니다.**
+4. **`AGENTS.md` 확정** — *"기획 문서 기준으로 AGENTS.md 채워줘"*
+5. **개발 반복** — `/next` → `/clear` → `/next` … (작업마다 자동 커밋)
+6. **GitHub 연결** — `gh repo create <계정>/<프로젝트> --private --source . --push`
+
+| 단계 | A. 저장소 있음 | B. 처음부터 |
+|---|---|---|
+| 준비 | clone → init | init → `git init` |
+| 첫 작업 | `AGENTS.md`를 실제 코드에 맞춤 | `/plan`으로 기획 |
+| 파악·설계 | `/diagram` · `/check` | `/diagram` · `/design` |
+| 작업 목록 | `/plan 기능명` 또는 직접 등록 | `/plan`이 자동 생성 |
+| 개발 | `/next` 반복 | `/next` 반복 |
+
+> `install.sh init`은 `git init`과 다릅니다. git 명령을 실행하지 않으므로 clone한 저장소의 `.git`·원격 연결·커밋 기록은 그대로입니다. `git init`은 B처럼 **빈 새 폴더**에서만 씁니다.
+> 쉬었다가 다시 시작할 때는 `/next`만 입력하면 `tasks/NOW.md`에서 이어갑니다. 같은 문제가 2번 실패하면 advisor가 자동 투입됩니다.
+
 ## 매일 쓰는 법
 
 | 하고 싶은 일 | 명령 |
