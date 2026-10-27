@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# nomad-doctor — 멀티에이전트 구성 점검 (/agent-check)
+exec bash "$(cd "$(dirname "$0")" && pwd)/_py" doctor "$@"
