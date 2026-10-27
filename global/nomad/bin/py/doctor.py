@@ -106,7 +106,11 @@ def check_global(repo):
         add("전역", "버전", "⚠️", f"본체 레포와 다른 파일 {len(outdated)}개 (예: {', '.join(outdated[:3])}) — git pull 후 재설치", "global")
     elif repo:
         add("전역", "버전", "✅", "본체 레포와 같음")
-    if missing or outdated or n < 3 or not ok:
+    reg_diff = False
+    if repo and os.path.exists(os.path.join(repo, "modules.json")):
+        reg_diff = sha(os.path.join(repo, "modules.json")) != sha(os.path.join(CL, "nomad", "modules.json"))
+        add("전역", "모듈 등록부", "⚠️" if reg_diff else "✅", "본체와 다름 — 재설치" if reg_diff else "본체와 같음", "global" if reg_diff else None)
+    if missing or outdated or n < 3 or not ok or reg_diff:
         FIX["global"] = ("전역 재설치 (기존 설정 보존, 백업 생성)", ["install.sh", "--no-path"])
 
 

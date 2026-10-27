@@ -46,7 +46,8 @@
       "path": ".",
       "ref": "main",
       "type": "security",
-      "desc": "L3 납품·규제 — OpenChain 5230/18974 자가 점검·VEX·SPDX·CRA 필드·오픈소스 정책"
+      "desc": "L3 납품·규제 — OpenChain 5230/18974 자가 점검·VEX·SPDX·CRA 필드·오픈소스 정책",
+      "category": "security"
     },
     "auth-rbac": {
       "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git",

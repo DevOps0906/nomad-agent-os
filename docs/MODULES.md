@@ -51,6 +51,16 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 |---|---|---|---|
 | `blueprint` | `docs/blueprints/<이름>/` | 화면 · 상태 · 흐름 · API · 데이터 표 + 도메인 분석 + 추가 필수 구조 → `plan2spec`이 바로 읽음 | `nomad-blueprints-module` |
 | `security` | `security/<이름>/` | L3 납품 · 규제 (OpenChain · VEX · SPDX · CRA) | `nomad-secure-pack-module` |
+| `docker` | `infra/<이름>/` | 컨테이너 실행 템플릿(Dockerfile · compose · 설정) + 운영 · 보안 문서. 가져올 때 `--allow-scripts`로 검토 확인 필수 | `nomad-docker-module` |
+
+### 분류 · 의존 (`module.json`)
+| 필드 | 뜻 | 도구 동작 |
+|---|---|---|
+| `category` | core · foundation · domain · ai · infra · security | `module list`가 분류별로 묶어 표시 |
+| `requires` | 꼭 함께 있어야 하는 모듈(예: AI 모듈 → contracts · files-storage) | `module add` 때 먼저 자동 설치(등록부 ref 기준, 같은 출처). 하나라도 검증 실패면 아무것도 설치하지 않음. 실행 파일을 포함한 모듈은 자동 설치하지 않고 직접 `--allow-scripts`로 받게 안내 |
+| `integrates` | 같이 쓰면 연결되는 모듈 | 설치 끝에 "함께 쓰면 연결: …(설치됨/미설치)" 안내만 |
+
+`module remove`는 다른 설치 모듈이 requires로 쓰고 있으면 경고합니다(기록은 `nomad-modules.json`의 requires).
 
 ## 2. 등록 목록
 `modules.json`(NOMAD 저장소, 설치 때 `~/.claude/nomad/`로 복사)에 이름 → 레포 · 하위 경로 · 참조(태그·브랜치)를 적습니다.
@@ -68,6 +78,9 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 | 위험 | 막는 방법 |
 |---|---|
 | 스크립트 · 실행 파일 | 허용 확장자만(.md .json .yml .csv .txt .svg .png .mmd .css .html). 스크립트는 `--allow-scripts`로 검토 후에만 |
+| docker 모듈 | Dockerfile · .dockerignore · .env.example · .conf · .toml만 추가 허용, `--allow-scripts` 필수. 셸 스크립트(.sh 등)는 플래그가 있어도 거부 |
+| requires 조작 | 이름 형식(`a-z0-9-`)만 · 등록부(또는 같은 `--from` 루트)에 있는 모듈만 · 깊이 8 · 순환 거부. `--allow-scripts`는 requires에 전파 안 됨 |
+| 설치 위치 조작 | `install_to`는 docs/ · security/ · infra/ 아래만, `.git` · `.github` · `.vscode` 경로 거부 |
 | 경로 조작 (`../`) · 심볼릭 링크 | 모듈 폴더 · 프로젝트 밖을 가리키면 거부 |
 | 몰래 바뀐 내용 | 커밋 고정 + 파일 해시 기록 |
 | 큰 파일 | 모듈당 5MB 제한 |

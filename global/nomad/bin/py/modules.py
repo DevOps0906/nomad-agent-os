@@ -10,7 +10,7 @@
 안전: 모듈 폴더 밖 경로 거부 · 허용 확장자만(스크립트는 --allow-scripts) · 총 5MB 제한 · 라이선스 확인 ·
       내가 고친 파일은 업데이트로 덮어쓰지 않고 <파일>.upstream 으로 새 버전을 둔다.
 """
-import argparse, hashlib, json, os, re, shutil, subprocess, sys
+import argparse, copy, hashlib, json, os, re, shutil, subprocess, sys
 from datetime import datetime, timezone
 
 try:
@@ -25,7 +25,11 @@ REGISTRIES = [os.path.normpath(os.path.join(HERE, "..", "..", "..", "..", "modul
               os.path.join(HOME_NOMAD, "modules.json"), os.path.join(HOME_NOMAD, "modules.local.json")]
 CACHE = os.path.join(HOME_NOMAD, "cache", "modules")
 LOCK = "nomad-modules.json"
-TYPES = {"blueprint": "docs/blueprints/{name}", "security": "security/{name}"}
+TYPES = {"blueprint": "docs/blueprints/{name}", "security": "security/{name}", "docker": "infra/{name}"}
+DOCKER_NAMES = {"dockerfile", ".dockerignore", ".env.example"}      # docker 유형에서만 허용(경로 basename 기준)
+DOCKER_EXT = {".conf", ".toml"}
+FORBIDDEN_DIRS = {".git", ".github", ".vscode"}
+CATEGORIES = [("core", "공통 계약"), ("foundation", "기반"), ("domain", "도메인"), ("ai", "AI"), ("infra", "인프라"), ("security", "보안")]
 SAFE_EXT = {".md", ".json", ".yml", ".yaml", ".csv", ".txt", ".svg", ".png", ".jpg", ".webp", ".mmd", ".css", ".html"}
 SCRIPT_EXT = {".sh", ".ps1", ".py", ".js", ".mjs", ".ts", ".bat", ".cmd", ".exe"}
 MAX_BYTES = 5 * 1024 * 1024
@@ -100,30 +104,44 @@ def resolve(target, a):
         sub = sub or "."; name = os.path.basename(sub.rstrip("/")) if sub != "." else os.path.basename(base).replace(".git", "")
     else:
         die(f"모르는 모듈: {target}  (목록: nomad-os module list)")
+    if not re.fullmatch(r"[A-Za-z0-9_-]+", name or ""): die(f"모듈 이름이 올바르지 않습니다(영문·숫자·-·_ 만): {name}")
     ref = a.ref or (reg.get(target, {}).get("ref") if target in reg else "") or "HEAD"
     root, commit = fetch(base, ref)
     mdir = os.path.normpath(os.path.join(root, sub))
-    if not mdir.startswith(os.path.normpath(root)): die("모듈 경로가 레포 밖을 가리킵니다")
+    nroot = os.path.normpath(root)
+    if mdir != nroot and not mdir.startswith(nroot + os.sep): die("모듈 경로가 레포 밖을 가리킵니다")
+    rroot, rm = os.path.realpath(root), os.path.realpath(mdir)
+    if rm != rroot and not rm.startswith(rroot + os.sep): die("모듈 경로가 레포 밖을 가리킵니다(심볼릭 링크)")
     return name, base, ref, commit, mdir
 
 
-def validate(mdir, allow_scripts):
+def validate(mdir, allow_scripts, req_name=None):
+    def need_scripts():
+        if req_name: die(f"requires {req_name}은 실행 파일 포함 — 먼저 `module add {req_name} --allow-scripts`로 직접 검토·설치")
+
     mf = os.path.join(mdir, "module.json")
     if not os.path.exists(mf): die(f"module.json 이 없습니다: {mdir}")
     try: man = json.load(open(mf, encoding="utf-8"))
     except ValueError as e: die(f"module.json 형식 오류: {e}")
     t = man.get("type")
     if t not in TYPES: die(f"모르는 모듈 유형 '{t}' (허용: {', '.join(TYPES)})")
+    if t == "docker" and not allow_scripts:
+        need_scripts(); die("docker 모듈은 Dockerfile·compose를 포함 — 내용 검토 후 --allow-scripts")
     files = man.get("files") or sorted(
         os.path.relpath(os.path.join(d, f), mdir).replace("\\", "/") for d, _, fs in os.walk(mdir) for f in fs if f != "module.json")
     total, bad = 0, []
+    rmdir = os.path.realpath(mdir)
     for rel in files:
         p = os.path.normpath(os.path.join(mdir, rel))
         if not p.startswith(os.path.normpath(mdir) + os.sep): die(f"모듈 밖을 가리키는 파일: {rel}")
         if os.path.islink(p): die(f"심볼릭 링크 거부: {rel}")
         if not os.path.isfile(p): die(f"목록의 파일이 없습니다: {rel}")
+        if not os.path.realpath(p).startswith(rmdir + os.sep): die(f"모듈 밖을 가리키는 파일(심볼릭 링크): {rel}")
+        if any(x.lower() in FORBIDDEN_DIRS for x in rel.replace("\\", "/").split("/")): die(f"허용되지 않은 경로(.git·.github·.vscode): {rel}")
         ext = os.path.splitext(rel)[1].lower()
-        if ext in SCRIPT_EXT and not allow_scripts: bad.append(rel)
+        if t == "docker":                                # 스크립트는 --allow-scripts 여도 거부, 허용 목록 파일만
+            if ext in SCRIPT_EXT or not (ext in SAFE_EXT | DOCKER_EXT or os.path.basename(rel).lower() in DOCKER_NAMES): bad.append(rel)
+        elif ext in SCRIPT_EXT and not allow_scripts: need_scripts(); bad.append(rel)
         elif ext not in SAFE_EXT | SCRIPT_EXT: bad.append(rel)
         total += os.path.getsize(p)
     if bad: die(f"허용되지 않은 파일(스크립트·실행 파일·모르는 형식): {', '.join(bad)}\n   검토 후 필요하면 --allow-scripts")
@@ -151,10 +169,19 @@ def save_lock(proj, lock):
         json.dump(lock, f, ensure_ascii=False, indent=2); f.write("\n")
 
 
-def install(proj, name, base, ref, commit, mdir, man, files, lock):
+def dest_of(proj, name, man):
     dest_rel = (man.get("install_to") or TYPES[man["type"]]).format(name=name).replace("\\", "/")
     dest = os.path.normpath(os.path.join(proj, dest_rel))
     if not dest.startswith(os.path.normpath(proj) + os.sep): die(f"install_to 가 프로젝트 밖입니다: {dest_rel}")
+    parts = os.path.relpath(dest, proj).split(os.sep)
+    top = TYPES[man["type"]].split("/")[0]
+    if parts[0] != top or len(parts) < 2: die(f"install_to 는 {top}/ 아래여야 합니다: {dest_rel}")
+    if any(x.lower() in FORBIDDEN_DIRS for x in parts): die(f"install_to 에 허용되지 않은 경로(.git·.github·.vscode): {dest_rel}")
+    return dest_rel, dest
+
+
+def install(proj, name, base, ref, commit, mdir, man, files, lock):
+    dest_rel, dest = dest_of(proj, name, man)
     prev = (lock["modules"].get(name) or {}).get("files", {})
     added, updated, kept, same = [], [], [], []
     rec = {}
@@ -176,7 +203,7 @@ def install(proj, name, base, ref, commit, mdir, man, files, lock):
         if os.path.exists(p) and sha256(p) == prev[rel]: os.remove(p); log(f"  - 삭제  {dest_rel}/{rel} (모듈에서 빠짐)")
     lock["modules"][name] = {"type": man["type"], "title": man.get("title", ""), "version": man.get("version", ""),
                              "source": base, "ref": ref, "commit": commit, "install_to": dest_rel,
-                             "license": man.get("license", ""), "installed": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+                             "license": man.get("license", ""), "requires": list(man.get("requires") or []), "installed": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                              "files": rec}
     log(f"■ {name} {man.get('version', '')} → {dest_rel}  (커밋 {commit[:12]})")
     for x in added: log(f"  + 생성  {x}")
@@ -189,13 +216,22 @@ def install(proj, name, base, ref, commit, mdir, man, files, lock):
 def cmd_list(a):
     reg, lock = registry(), load_lock(a.project)
     log("■ 등록된 모듈 (nomad-os module add <이름>)")
-    log("  | 이름 | 유형 | 상태 | 출처 | 설명 |\n  |---|---|---|---|---|")
-    for n, m in sorted(reg.items()):
-        inst = lock["modules"].get(n)
-        st = f"설치됨 {inst['commit'][:7]}" if inst else ("예정" if m.get("status") == "planned" else "-")
-        log(f"  | {n} | {m.get('type', '')} | {st} | {m['repo']}{'#' + m['path'] if m.get('path', '.') != '.' else ''} | {m.get('desc', '')} |")
+    known = [c for c, _ in CATEGORIES]
+    groups = [(c, t, [n for n, m in sorted(reg.items()) if m.get("category") == c]) for c, t in CATEGORIES]
+    groups.append(("other", "기타", [n for n, m in sorted(reg.items()) if m.get("category") not in known]))
+    for c, title, names in groups:
+        if not names: continue
+        log(f"\n■ {title} ({c})")
+        log("  | 이름 | 유형 | 상태 | 출처 | 설명 |\n  |---|---|---|---|---|")
+        for n in names:
+            m, inst = reg[n], lock["modules"].get(n)
+            st = f"설치됨 {inst['commit'][:7]}" if inst else ("예정" if m.get("status") == "planned" else "-")
+            log(f"  | {n} | {m.get('type', '')} | {st} | {m['repo']}{'#' + m['path'] if m.get('path', '.') != '.' else ''} | {m.get('desc', '')} |")
     extra = [n for n in lock["modules"] if n not in reg]
-    for n in extra: log(f"  | {n} | {lock['modules'][n]['type']} | 설치됨 | {lock['modules'][n]['source']} | (등록 목록 밖) |")
+    if extra:
+        log("\n■ 등록 목록 밖 (other)")
+        log("  | 이름 | 유형 | 상태 | 출처 | 설명 |\n  |---|---|---|---|---|")
+        for n in extra: log(f"  | {n} | {lock['modules'][n]['type']} | 설치됨 | {lock['modules'][n]['source']} | (등록 목록 밖) |")
 
 
 def after(man, dest_rel):
@@ -205,14 +241,46 @@ def after(man, dest_rel):
         log(f"■ 다음: {dest_rel}/README.md 의 순서대로 (L3 — security-baseline 스킬 1절)")
 
 
-def cmd_add(a):
+MAX_DEPTH = 8
+
+
+def collect(a, chain, plan, lock, is_req, reg):
+    """설치 계획을 먼저 만든다(resolve·validate 만, 파일은 건드리지 않음). requires 가 앞, 자신이 뒤."""
     name, base, ref, commit, mdir = resolve(a.target, a)
-    man, files = validate(mdir, a.allow_scripts)
+    if name in chain: die(f"requires 순환: {' → '.join(chain + (name,))}")
+    if len(chain) >= MAX_DEPTH: die(f"requires 가 너무 깊습니다(최대 {MAX_DEPTH}단계): {' → '.join(chain + (name,))}")
+    man, files = validate(mdir, a.allow_scripts and not is_req, name if is_req else None)
+    dest_of(a.project, name, man)
+    chain = chain + (name,)
+    for r in man.get("requires") or []:
+        if not isinstance(r, str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", r): die(f"requires 이름이 올바르지 않습니다: {r!r}")
+        if r in lock["modules"] or any(p[0] == r for p in plan): continue
+        if r in chain: die(f"requires 순환: {' → '.join(chain + (r,))}")
+        if a.source and os.path.isdir(a.source):
+            if not os.path.isdir(os.path.join(a.source, reg.get(r, {}).get("path") or r)): die(f"requires {r} 폴더가 {a.source} 안에 없습니다")
+        elif r not in reg: die(f"requires {r} 은(는) 등록부에 없습니다")
+        b = copy.copy(a); b.target, b.ref, b._update = r, None, False
+        collect(b, chain, plan, lock, True, reg)
+    plan.append((name, base, ref, commit, mdir, man, files))
+
+
+def cmd_add(a):
     lock = load_lock(a.project)
-    if name in lock["modules"] and not a._update:
-        log(f"  ℹ️ 이미 설치됨 — 새 버전으로: nomad-os module update {name}")
-    dest = install(a.project, name, base, ref, commit, mdir, man, files, lock)
-    save_lock(a.project, lock); after(man, dest)
+    plan = []
+    collect(a, (), plan, lock, False, registry())
+    top = plan[-1]
+    if top[0] in lock["modules"] and not a._update:
+        log(f"  ℹ️ 이미 설치됨 — 새 버전으로: nomad-os module update {top[0]}")
+    if len(plan) > 1:
+        log(f"■ 함께 설치(requires): {', '.join(p[0] for p in plan[:-1])}")
+        if not a.source: log("  ℹ️ requires 는 등록부 ref 로 설치합니다")
+    for name, base, ref, commit, mdir, man, files in plan:
+        dest = install(a.project, name, base, ref, commit, mdir, man, files, lock)
+        after(man, dest)
+    save_lock(a.project, lock)
+    man = top[5]
+    integ = man.get("integrates") or []
+    if integ: log("ℹ️ 함께 쓰면 연결: " + " · ".join(f"{x}({'설치됨' if x in lock['modules'] else '미설치'})" for x in integ))
 
 
 def cmd_update(a):
@@ -224,6 +292,11 @@ def cmd_update(a):
         a.source = a.source or (m["source"] if os.path.isdir(m["source"]) or n not in registry() else None)
         a.ref = a.ref or m["ref"]; a.target, a._update = n, True
         cmd_add(a); a.source = a.ref = None
+
+
+def dependents(lock, n):
+    """설치된 모듈 n 의 requires — lock 기록(예전 항목은 없을 수 있음)."""
+    return lock["modules"][n].get("requires") or []
 
 
 def cmd_remove(a):
@@ -240,7 +313,9 @@ def cmd_remove(a):
     for d, _, _ in sorted(os.walk(dest), reverse=True):
         try: os.rmdir(d)
         except OSError: pass
+    users = [n for n in lock["modules"] if n != a.target and a.target in dependents(lock, n)]
     del lock["modules"][a.target]; save_lock(a.project, lock)
+    if users: log(f"  ⚠️ {', '.join(users)} 모듈이 {a.target} 을(를) requires 로 사용 중 — 연결이 끊길 수 있음")
     log(f"■ {a.target} 제거" + (f" — 내가 수정한 파일은 남김: {', '.join(kept)}" if kept else ""))
 
 
