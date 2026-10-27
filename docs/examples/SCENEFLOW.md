@@ -57,7 +57,7 @@ bash ~/workspace/dev/nomad-agent-os/install.sh            # PC에서 처음이�
 
 cd ~/workspace/dev
 git clone https://github.com/DevOps0906/SceneFlow.git
-bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/SceneFlow --name SceneFlow
+nomad-os init ~/workspace/dev/SceneFlow --name SceneFlow
 
 cd SceneFlow
 git status --short        # 새로 생긴 것: AGENTS.md CLAUDE.md .claude/ .codex/ .gemini/ .geminiignore .gitignore tasks/  (기존 파일 변경 없음)
@@ -69,7 +69,7 @@ claude
 
 cd ~\workspace\dev
 git clone https://github.com/DevOps0906/SceneFlow.git
-~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\SceneFlow --name SceneFlow
+nomad-os init ~\workspace\dev\SceneFlow --name SceneFlow
 
 cd SceneFlow
 git status --short

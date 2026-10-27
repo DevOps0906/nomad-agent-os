@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # NOMAD Agent OS 설치 (macOS · Linux · Windows Git Bash)
 #   bash install.sh                 전역 설치 (~/.claude) — 모든 프로젝트에서 같은 팀 사용
+#   nomad-os init <프로젝트> [--name 이름]  전역 설치 뒤에는 어디서든 이 명령으로 (저장소 위치 몰라도 됨)
 #   bash install.sh init <프로젝트> [--name 이름]  프로젝트에 AGENTS.md · CLAUDE.md · rules · tasks · Codex·Gemini 설정 적용(기존 파일 보존·병합)
 #                                    이름 생략 시 폴더명. NOMAD 저장소 안의 경로는 거부
 #   옵션: --no-path (PATH 등록 안 함)  --codex (ChatGPT Codex 전역 ~/.codex/AGENTS.md에 CORE 추가)
@@ -62,6 +63,13 @@ if [ "${1:-}" = "init" ]; then
     echo "   프로젝트는 저장소 밖에 두세요. 예: bash $SRC/install.sh init ~/workspace/dev/<프로젝트명>"; exit 1; }
   case "$P" in /*|[A-Za-z]:*) PA="$P" ;; *) PA="$PWD/$P" ;; esac
   inside_src "$PA" && refuse "$PA"                          # 폴더를 만들기 전에 1차 검사
+  # 상위 폴더가 없으면 경로 오타일 가능성이 높다 → 엉뚱한 곳에 빈 폴더를 만들지 않고 멈춘다
+  if [ ! -d "$PA" ] && [ ! -d "$(dirname "$PA")" ]; then
+    echo "❌ 상위 폴더가 없습니다: $(dirname "$PA")"
+    echo "   해석된 프로젝트 경로: $PA"
+    echo "   경로를 확인하세요. (Windows에서 ~ 는 $(cygpath -m "$HOME" 2>/dev/null || echo "$HOME") 입니다. 저장소가 D: 에 있으면 D:/... 로 지정)"
+    echo "   정말 새로 만들려면 상위 폴더를 먼저 만드세요: mkdir -p \"$(dirname "$PA")\""; exit 1
+  fi
   mkdir -p "$P" && PA="$(cd "$P" && pwd)" || { echo "❌ 폴더를 만들 수 없습니다: $P"; exit 1; }
   inside_src "$PA" && refuse "$PA"                          # ../ 나 링크로 우회한 경우 2차 검사
   P="$PA"; PBK="$P/.nomad/backup-$TS"; NAME="${NAME:-$(basename "$P")}"
@@ -109,6 +117,10 @@ copy_dir "$SRC/global/skills" "$CL/skills"
 copy_dir "$SRC/global/commands" "$CL/commands"
 copy_dir "$SRC/global/nomad" "$CL/nomad"
 cp "$SRC/docs/ARCHITECTURE.md" "$CL/nomad/ARCHITECTURE.md"
+# nomad-os: 이 저장소 위치를 기억하는 실행기 → 어디서든 `nomad-os init <경로>` · `nomad-os`(재설치)
+printf '%s\n' '#!/usr/bin/env bash' "# nomad-os — NOMAD 설치기 실행 (설치 때 생성. 저장소: $SRC)" \
+  "exec bash \"$SRC/install.sh\" \"\$@\"" > "$CL/nomad/bin/nomad-os"
+echo "  + nomad-os 명령 생성 (저장소: $SRC)"
 # Windows에서 CRLF로 받은 경우 스크립트가 깨지지 않게 줄바꿈 정리 후 실행 권한
 $PY -c "import sys
 for p in [x for x in sys.argv[1:] if __import__('os').path.isfile(x)]:

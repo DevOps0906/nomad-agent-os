@@ -90,23 +90,35 @@ Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
 
 ## 3. 프로젝트 적용 — 프로젝트마다 한 번
 
-어느 폴더에서 실행해도 됩니다. 프로젝트 폴더가 없으면 만듭니다.
+`nomad-os`는 2단계 전역 설치 때 만들어지는 명령입니다. 이 저장소 위치를 기억하므로 **어느 폴더에서나** 실행합니다. 프로젝트 폴더가 없으면 만들지만, **상위 폴더까지 없으면 경로 오타로 보고 멈춥니다**(엉뚱한 곳에 빈 폴더를 만들지 않도록).
 
 **PowerShell**
 ```powershell
-~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\내프로젝트명
+nomad-os init ~\workspace\dev\내프로젝트명
 
 # 표시 이름을 직접 정하려면
-~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\내프로젝트명 --name "쇼핑몰"
+nomad-os init ~\workspace\dev\내프로젝트명 --name "쇼핑몰"
 ```
 
 **Git Bash**
 ```bash
-bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/내프로젝트명
+nomad-os init ~/workspace/dev/내프로젝트명
 
 # 표시 이름을 직접 정하려면
-bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/내프로젝트명 --name "쇼핑몰"
+nomad-os init ~/workspace/dev/내프로젝트명 --name "쇼핑몰"
 ```
+
+> **`~\workspace\dev`는 예시입니다.** 실제 위치로 바꿉니다. 예: 저장소가 `D:\WorkSpace\DEV`에 있으면 `nomad-os init D:\WorkSpace\DEV\SceneFlow --name SceneFlow`
+> `nomad-os`를 찾을 수 없다고 나오면: 전역 설치를 다시 실행하거나(`install.ps1`), 설치 전과 같이 `<저장소 위치>\install.ps1 init <경로>`로 실행해도 결과는 같습니다.
+
+### 오류가 날 때
+
+| 메시지 | 원인 | 해결 |
+|---|---|---|
+| `'~' 모듈을 로드할 수 없습니다` | `~\...\install.ps1` 파일이 그 위치에 없음 (`~` = `C:\Users\<사용자>`) | 실제 위치로 실행하거나 `nomad-os init …` 사용 |
+| `❌ 상위 폴더가 없습니다` | 프로젝트 경로가 잘못됨 (보통 `~`와 실제 드라이브가 다름) | 표시된 "해석된 경로"를 보고 실제 경로로 다시 실행 |
+| `❌ 대상 경로가 NOMAD 저장소 … 안입니다` | 프로젝트를 이 저장소 안에 만들려 함 | 저장소 밖 경로로 실행 |
+| `❌ Git Bash(bash.exe)를 찾지 못했습니다` | Git for Windows 미설치 | Git 설치 또는 `$env:CLAUDE_CODE_GIT_BASH_PATH` 지정 |
 
 ### 프로젝트에 생기는 파일
 

@@ -1,6 +1,7 @@
 ﻿# NOMAD Agent OS 설치 — Windows PowerShell 5.1 / PowerShell 7 용 진입점
 #   .\install.ps1                                   전역 설치 (~/.claude) + PowerShell용 도구 명령(.cmd) 등록
 #   .\install.ps1 init <프로젝트> [--name 이름]      프로젝트에 템플릿 적용 (기존 파일 보존·병합)
+#   nomad-os init <프로젝트> [--name 이름]           전역 설치 뒤에는 어디서든 (이 파일 경로를 몰라도 됨)
 #   옵션: --no-path  --codex  --gemini  (install.sh 와 같음)
 # 실제 설치 로직은 install.sh 하나뿐이다. 이 스크립트는 Git Bash를 찾아 그것을 실행하고,
 # 전역 설치 때 ~/.claude/nomad/bin 도구를 PowerShell·cmd에서 이름만으로 부를 수 있게 .cmd 래퍼를 만든다.
@@ -46,14 +47,20 @@ if ($code -ne 0 -or $isInit) { [Console]::OutputEncoding = $prevOut; exit $code 
 $bin = Join-Path $HOME '.claude\nomad\bin'
 $win = Join-Path $HOME '.claude\nomad\bin-win'
 New-Item -ItemType Directory -Force $win | Out-Null
-$skip = '_py', 'hook-read', 'readguard'   # 훅·내부용은 제외
+$skip = '_py', 'hook-read', 'readguard', 'nomad-os'   # 훅·내부용 제외, nomad-os 는 아래에서 따로
 $n = 0
+$utf8 = New-Object Text.UTF8Encoding $false
 Get-ChildItem $bin -File | Where-Object { $_.Extension -eq '' -and $skip -notcontains $_.Name } | ForEach-Object {
   $cmd = "@echo off`r`n`"$bash`" `"%USERPROFILE%\.claude\nomad\bin\$($_.Name)`" %*`r`n"
-  [IO.File]::WriteAllText((Join-Path $win "$($_.Name).cmd"), $cmd, (New-Object Text.UTF8Encoding $false))
+  [IO.File]::WriteAllText((Join-Path $win "$($_.Name).cmd"), $cmd, $utf8)
   $n++
 }
 Write-Host "  + PowerShell용 도구 명령 $($n)개 → $win"
+# nomad-os: 이 저장소의 install.ps1 을 거쳐 실행 → ~ · D:\ 같은 Windows 경로를 그대로 써도 된다
+$ps1 = Join-Path $PSScriptRoot 'install.ps1'
+$cmd = "@echo off`r`npowershell.exe -NoProfile -ExecutionPolicy Bypass -File `"$ps1`" %*`r`nexit /b %ERRORLEVEL%`r`n"
+[IO.File]::WriteAllText((Join-Path $win 'nomad-os.cmd'), $cmd, $utf8)
+Write-Host "  + nomad-os 명령 → 어디서든 'nomad-os init <프로젝트 경로>' (저장소: $PSScriptRoot)"
 
 if ($args -notcontains '--no-path') {
   $userPath = [string][Environment]::GetEnvironmentVariable('Path', 'User')

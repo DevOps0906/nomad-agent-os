@@ -22,7 +22,7 @@ git clone https://github.com/DevOps0906/nomad-agent-os.git ~\workspace\dev\nomad
 ~\workspace\dev\nomad-agent-os\install.ps1
 
 # 3. 내 프로젝트에 적용 (프로젝트마다 한 번)
-~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\내프로젝트명
+nomad-os init ~\workspace\dev\내프로젝트명
 
 # 4. 시작
 cd ~\workspace\dev\내프로젝트명
@@ -30,6 +30,9 @@ claude
 ```
 
 > 스크립트 실행이 막히면 한 번만: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+>
+> **`~\workspace\dev`는 예시 위치입니다.** `~`는 `C:\Users\<사용자>`이므로, 저장소를 다른 곳(예: `D:\WorkSpace\DEV`)에 두었다면 그 경로로 바꿔 씁니다. 파일이 없는 경로로 `install.ps1`을 부르면 PowerShell이 `'~' 모듈을 로드할 수 없습니다`라고 표시합니다.
+> 2단계 설치 뒤에는 **`nomad-os`** 명령이 생기므로, 3단계부터는 저장소 위치를 몰라도 어느 폴더에서나 `nomad-os init <프로젝트 경로>`로 실행합니다.
 
 ### Git Bash · macOS · Linux
 
@@ -40,8 +43,8 @@ git clone https://github.com/DevOps0906/nomad-agent-os.git ~/workspace/dev/nomad
 # 2. 설치 (PC마다 한 번)
 bash ~/workspace/dev/nomad-agent-os/install.sh
 
-# 3. 내 프로젝트에 적용 (프로젝트마다 한 번)
-bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/내프로젝트명
+# 3. 내 프로젝트에 적용 (프로젝트마다 한 번 — 설치 후 새 터미널에서)
+nomad-os init ~/workspace/dev/내프로젝트명
 
 # 4. 시작
 cd ~/workspace/dev/내프로젝트명

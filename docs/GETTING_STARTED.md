@@ -22,7 +22,7 @@
 ```powershell
 cd ~\workspace\dev
 git clone https://github.com/<계정>/<저장소명>.git
-~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\<저장소명>
+nomad-os init ~\workspace\dev\<저장소명>
 cd <저장소명>
 claude
 ```
@@ -31,7 +31,7 @@ claude
 ```bash
 cd ~/workspace/dev
 git clone https://github.com/<계정>/<저장소명>.git
-bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/<저장소명>
+nomad-os init ~/workspace/dev/<저장소명>
 cd <저장소명> && claude
 ```
 
@@ -83,7 +83,7 @@ git push
 
 **PowerShell**
 ```powershell
-~\workspace\dev\nomad-agent-os\install.ps1 init ~\workspace\dev\<프로젝트명> --name "<제품명>"
+nomad-os init ~\workspace\dev\<프로젝트명> --name "<제품명>"
 cd ~\workspace\dev\<프로젝트명>
 git init -b main
 claude
@@ -91,7 +91,7 @@ claude
 
 **Git Bash**
 ```bash
-bash ~/workspace/dev/nomad-agent-os/install.sh init ~/workspace/dev/<프로젝트명> --name "<제품명>"
+nomad-os init ~/workspace/dev/<프로젝트명> --name "<제품명>"
 cd ~/workspace/dev/<프로젝트명> && git init -b main && claude
 ```
 
