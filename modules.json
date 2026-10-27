@@ -2,23 +2,23 @@
   "_doc": "NOMAD 모듈 등록 목록 — 내용은 외부 레포에 있고 'nomad-os module add <이름> <프로젝트>'로 필요할 때 가져온다. status=planned 는 레포 준비 전.",
   "modules": {
     "funnel": {
-      "repo": "https://github.com/DevOps0906/nomad-blueprints.git", "path": "funnel", "ref": "main", "type": "blueprint",
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git", "path": "funnel", "ref": "main", "type": "blueprint",
       "status": "planned", "desc": "Funnel(퍼널 마케팅) — 랜딩·폼·동의·점수·육성·파이프라인·퍼널 대시보드"
     },
     "crm": {
-      "repo": "https://github.com/DevOps0906/nomad-blueprints.git", "path": "crm", "ref": "main", "type": "blueprint",
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git", "path": "crm", "ref": "main", "type": "blueprint",
       "status": "planned", "desc": "고객·회사·연락처·활동·딜·견적"
     },
     "erp": {
-      "repo": "https://github.com/DevOps0906/nomad-blueprints.git", "path": "erp", "ref": "main", "type": "blueprint",
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git", "path": "erp", "ref": "main", "type": "blueprint",
       "status": "planned", "desc": "구매·재고·판매·회계 연결(모듈별 하위 분리)"
     },
     "lms": {
-      "repo": "https://github.com/DevOps0906/nomad-blueprints.git", "path": "lms", "ref": "main", "type": "blueprint",
+      "repo": "https://github.com/DevOps0906/nomad-blueprints-module.git", "path": "lms", "ref": "main", "type": "blueprint",
       "status": "planned", "desc": "강의·수강·진도·과제·평가·수료"
     },
     "secure-pack": {
-      "repo": "https://github.com/DevOps0906/nomad-secure-pack.git", "path": ".", "ref": "main", "type": "security",
+      "repo": "https://github.com/DevOps0906/nomad-secure-pack-module.git", "path": ".", "ref": "main", "type": "security",
       "status": "planned", "desc": "L3 납품·규제 — OpenChain 5230/18974 자가 점검·VEX·SPDX·CRA 필드·오픈소스 정책"
     }
   }

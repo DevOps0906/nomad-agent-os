@@ -19,8 +19,8 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 
 | 유형 | 가져오는 곳 | 내용 | 레포 |
 |---|---|---|---|
-| `blueprint` | `docs/blueprints/<이름>/` | 화면 · 상태 · 흐름 · API · 데이터 표 + 도메인 분석 + 추가 필수 구조 → `plan2spec`이 바로 읽음 | `nomad-blueprints` |
-| `security` | `security/<이름>/` | L3 납품 · 규제 (OpenChain · VEX · SPDX · CRA) | `nomad-secure-pack` |
+| `blueprint` | `docs/blueprints/<이름>/` | 화면 · 상태 · 흐름 · API · 데이터 표 + 도메인 분석 + 추가 필수 구조 → `plan2spec`이 바로 읽음 | `nomad-blueprints-module` |
+| `security` | `security/<이름>/` | L3 납품 · 규제 (OpenChain · VEX · SPDX · CRA) | `nomad-secure-pack-module` |
 
 ## 2. 등록 목록
 `modules.json`(NOMAD 저장소, 설치 때 `~/.claude/nomad/`로 복사)에 이름 → 레포 · 하위 경로 · 참조(태그·브랜치)를 적습니다.
@@ -28,7 +28,7 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 
 ## 3. 기록 — `nomad-modules.json` (프로젝트 루트, 커밋 권장)
 ```json
-{ "modules": { "funnel": { "source": "https://github.com/…/nomad-blueprints.git", "ref": "v0.1.0",
+{ "modules": { "funnel": { "source": "https://github.com/…/nomad-blueprints-module.git", "ref": "v0.1.0",
   "commit": "48080bc…", "install_to": "docs/blueprints/funnel", "files": { "screens.md": "<sha256>" } } } }
 ```
 - **커밋까지 고정** — 같은 기록으로 팀원 · CI가 같은 내용을 받습니다.
@@ -57,7 +57,7 @@ PowerShell · Git Bash 같은 명령입니다(설치 후 `nomad-module`로도 �
 각 프로젝트의 정확한 라이선스는 사용 시점에 원문으로 확인하세요.
 
 ## 6. 새 모듈 만들기
-`nomad-blueprints/README.md`의 "모듈 형식"을 따릅니다. 만든 뒤 검증:
+`nomad-blueprints-module/README.md`의 "모듈 형식"을 따릅니다. 만든 뒤 검증:
 ```bash
-mkdir -p /tmp/t/docs && nomad-os module add <이름> /tmp/t --from <nomad-blueprints 경로> && cd /tmp/t && plan2spec --strict
+mkdir -p /tmp/t/docs && nomad-os module add <이름> /tmp/t --from <nomad-blueprints-module 경로> && cd /tmp/t && plan2spec --strict
 ```

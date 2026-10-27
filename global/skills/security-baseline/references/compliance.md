@@ -24,5 +24,5 @@
 OpenChain은 SBOM 형식이 아니라 **관리 체계**의 표준이다. SBOM은 그 체계를 충족하는 수단 중 하나다.
 무료 자가 체크리스트와 정책 템플릿(CC0)은 https://openchainproject.org 의 Projects · Learning에서 받는다.
 
-## 3. L3로 올라갈 때 할 일 (별도 팩 `nomad-secure-pack`에서 다룰 예정)
+## 3. L3로 올라갈 때 할 일 (별도 팩 `nomad-secure-pack-module`에서 다룰 예정)
 5230·18974 자가 체크리스트로 갭 분석 → 오픈소스 정책 문서 → VEX 운영 → SPDX 산출 → CRA 필드 보강 → 고객 제출 양식.
