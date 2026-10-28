@@ -48,7 +48,7 @@
 ## 2. 전략 — 설계 원칙 7가지
 
 1. **상시 로드 4,000토큰 예산**: 매 턴 붙는 것(CLAUDE.md·설명)은 판단에 꼭 필요한 것만. 나머지는 필요할 때 읽는 파일로.
-2. **역할은 에이전트, 지식은 스킬, 강제는 훅**: 에이전트 10개는 직급·역할로만 나누고(설명 1문장), 스택 지식은 스킬 파일을 필요할 때 Read. 지켜야 하는 규칙은 문장이 아니라 훅·스크립트로 강제.
+2. **역할은 에이전트, 지식은 스킬, 강제는 훅**: 에이전트 12개는 직급·역할로만 나누고(설명 1문장), 스택 지식은 스킬 파일을 필요할 때 Read. 지켜야 하는 규칙은 문장이 아니라 훅·스크립트로 강제.
 3. **싼 모델이 넓게, 비싼 모델은 좁게**: 탐색·반복·다이어그램은 Haiku, 구현·기획·디자인·리뷰는 Sonnet, 판단·계획 공격은 Opus, 막혔을 때만 Fable.
 4. **모델은 내용과 판단만, 생성은 스크립트**: ERD·구조도·문서 뼈대·디자인 미리보기는 결정적 스크립트(토큰 0).
 5. **결과는 파일, 대화에는 요약**: 팀원 보고 20줄, 명령 출력은 `q`로 실패 줄만, 긴 산출물은 경로만.
@@ -65,14 +65,14 @@
 ~/.claude/                         ← 전역(모든 프로젝트에서 같은 팀)
 ├── CLAUDE.md                      @nomad/TEAM.md + 개인 설정
 ├── settings.json                  readguard 훅(SessionStart·PreToolUse Read·PostToolUse)
-├── agents/   10개                 scout intern builder planner designer diagrammer tester reviewer challenger advisor
+├── agents/   12개                 scout intern builder planner designer diagrammer tester reviewer challenger advisor codex-designer codex-reviewer
 ├── skills/   9개                  plan-docs design-tokens ux-patterns diagram security-baseline stack-nextjs stack-supabase stack-fastapi stack-flutter
-├── commands/ 9개                  /next /plan /design /diagram /check /token-audit /oss /secure /agent-check
+├── commands/ 10개                 /next /plan /design /diagram /check /token-audit /oss /secure /agent-check /handoff
 └── nomad/
     ├── CORE.md                    도구 무관 원칙(한국어·반응형 3구간·4원칙·토큰 규칙)
     ├── TEAM.md                    팀 표·위임 규격·위험도별 검증
     ├── ARCHITECTURE.md            이 문서
-    └── bin/                       q codemap delta plan-scaffold design-preview deps2mmd sql2erd mmd-check oss token-audit readguard hook-read
+    └── bin/                       q codemap delta handoff plan-scaffold design-preview deps2mmd sql2erd mmd-check oss token-audit readguard hook-read
         ├── _py                    파이썬 실행기(Windows python3 스텁·cp949 대응, UTF-8 모드)
         └── py/                    파이썬 도구 본체
 
@@ -89,30 +89,42 @@
 
 ### 3.2 팀 구성
 
+v3.0: 팀장(Opus)이 6역할(팀장·공동 기획·공동 디자인·개발·독립 품질 검증·경량 보조)을 지휘한다. 기획·디자인은 Sonnet과 Codex가 초안을 나눠 쓰고, 구현은 Sonnet, 검증은 Codex가 독립적으로 맡는다. Codex 팀원 2명은 Haiku 중계자가 Codex MCP를 호출하며, Codex 모델은 `~/.codex/config.toml` 기본값을 따른다(에이전트 파일에 모델 미지정).
+
 ```mermaid
 flowchart TB
-  U["사용자 · /next /plan /design /diagram"] --> L["팀장 — 주 세션 (Opus 5.5)<br/>분해 · 위임 · 판단 · 커밋"]
+  U["사용자 · /next /plan /design /diagram /handoff"] --> L["팀장 — 주 세션 (Opus 5.5)<br/>PO · 아키텍트 · 위임 · 판단 · 커밋"]
+  L -->|기획| PL["planner (Sonnet)"]
+  L -->|디자인 토큰| DE["designer (Sonnet)"]
+  L -->|구현| BU["builder (Sonnet)"]
+  L -->|테스트| TE["tester (Sonnet)"]
+  L -->|보안·계약·Codex 대체| RV["reviewer (Sonnet)"]
   L -->|탐색| SC["scout (Haiku)"]
   L -->|반복| IN["intern (Haiku)"]
   L -->|다이어그램| DG["diagrammer (Haiku)"]
-  L -->|구현| BU["builder (Sonnet)"]
-  L -->|기획| PL["planner (Sonnet)"]
-  L -->|디자인| DE["designer (Sonnet)"]
-  L -->|테스트| TE["tester (Sonnet)"]
-  L -->|변경 후| RV["reviewer (Sonnet)<br/>code · contract · security · doc"]
+  L -->|공동 기획·디자인| CD["codex-designer (Codex)"]
+  L -->|독립 검증 · 읽기 전용| CR["codex-reviewer (Codex)"]
   L -.->|위험 작업 착수 전| CH["challenger (Opus)"]
   L ==>|2회 실패 시만| AD["advisor 고문 (Fable 5.1)"]
   L -.->|단순 텍스트| OSS["oss — 로컬 LLM (Ollama)"]
 ```
 
-| 직급 | 에이전트 | 모델 | 쓰기 | 특징 |
+| v3.0 역할 | 팀원 (12명) | 모델 | 쓰기 | 특징 |
 |---|---|---|---|---|
+| 팀장·PO·아키텍트 | (주 세션) | claude-opus-5-5 | 전체 | 위임·판단·커밋. 팀원 12명에 포함하지 않음 |
 | 고문 | advisor | claude-fable-5-1 | 없음 | 2회 실패 후만, 한 번에 끝나는 진단 |
-| 팀장 | (주 세션) | claude-opus-5-5 | 전체 | 위임·판단·커밋 |
-| 검증 | challenger | claude-opus-5-5 | 없음 | 결제·인증·RLS·마이그레이션 계획만 |
-| 대리 | builder · planner · designer · tester | claude-sonnet-5-5 | 범위 한정 | planner·designer는 스킬 프리로드 |
-| 검증 | reviewer | claude-sonnet-5-5 | 없음 | 4개 리뷰어(review·contract·security·doc)를 mode 하나로 통합 |
-| 사원 | scout · intern · diagrammer | claude-haiku-5-5 | scout 없음 | scout·diagrammer는 `omitClaudeMd`(CLAUDE.md 미로드) |
+| 계획 검증 | challenger | claude-opus-5-5 | 없음 | 결제·인증·RLS·마이그레이션 계획만 |
+| 공동 기획 | planner | claude-sonnet-5-5 | 범위 한정 | 기능·데이터·타당성 초안. 스킬 프리로드 |
+| 공동 디자인 | codex-designer | Codex(config 기본) 중계: claude-haiku-5-5 | `docs/**` `design/**` `docs/diagrams/**` | UX·IA·흐름·와이어 초안 + Sonnet 초안 변경분 교차 검토. Mermaid + `mmd-check`, Figma MCP 있으면 링크 보고 |
+| 공동 디자인 | designer | claude-sonnet-5-5 | 범위 한정 | 디자인 토큰·DESIGN.md·미리보기. 스킬 프리로드 |
+| 개발 | builder | claude-sonnet-5-5 | 범위 한정 | 구현·수정·리팩터링 |
+| 개발 | tester | claude-sonnet-5-5 | 테스트 파일 | 테스트 작성·실행 |
+| 독립 품질 검증 | codex-reviewer | Codex(config 기본) 중계: claude-haiku-5-5 | 없음(read-only) | `git diff` + 관련 파일만 입력. mode code·design·a11y·security. 🔴/🟡 형식, 반박 후 남은 것만 |
+| 독립 품질 검증 | reviewer | claude-sonnet-5-5 | 없음 | mode code·contract·security·doc·design. Codex 불가 시 대체 |
+| 경량 보조 | scout · intern · diagrammer | claude-haiku-5-5 | scout 없음 | scout·diagrammer는 `omitClaudeMd`(CLAUDE.md 미로드) |
+
+- Codex 호출이 실패하면(한도·미설치) 두 Codex 팀원은 `상태: Codex 불가`만 보고하고 끝낸다. 팀장이 `reviewer`나 `designer`로 대체한다.
+- 구 `codex.md`(범용 중계자)는 없어지고 두 역할로 나뉜다. 설치본이 남아 있으면 `nomad-doctor`가 경고한다.
 
 **통합한 이유**: J의 review-expert·contract-reviewer·security-auditor는 설명만 1,700토큰. 하나의 reviewer + `mode`로 바꿔 설명 1문장, 필요한 모드만 병렬 호출.
 **도메인 에이전트를 없앤 이유**: 스택이 바뀌어도 팀은 그대로다. builder가 작업 영역의 `stack-*` 스킬 파일을 Read 한다(스킬 자동 호출은 신뢰도가 낮아 지시문으로 명시).
@@ -150,6 +162,57 @@ sequenceDiagram
 금지: <건드리지 말 것>
 ```
 승인 로그·brief/result 파일·gate 스크립트를 없앤 대신 **도구 화이트리스트(쓰기 불가 에이전트는 Edit/Write 없음) + 쓰기 허용 경로 + reviewer의 범위 이탈 점검**으로 같은 안전을 얻는다.
+
+### 3.5 SDLC 9단계
+
+02~07단계는 **기능 단위로 반복**한다(기능 하나가 02→07을 돌고, 다음 기능으로). 단계가 끝날 때마다 `tasks/NOW.md`를 갱신한다(3.6 체크포인트).
+
+| # | 단계 | 주담당 | 산출물 | 다음 단계 조건 |
+|---|---|---|---|---|
+| 01 | 검증 | 팀장 + planner · codex-designer | `00_LEAN.md` | 통과 기준 충족 (린 검증 게이트) |
+| 02 | 기획 | planner ↔ codex-designer (교차 검토 1회) | `01_PRD.md` 기능 범위 · 보안 레벨 | `reviewer(doc)` 통과 |
+| 03 | UX | codex-designer ↔ planner | `03_SCREENS_UX.md` 화면 표 · 흐름 · 와이어 | `plan2spec --strict` 통과 |
+| 04 | UI | codex-designer ↔ designer | 토큰 파일 · `DESIGN.md` · 미리보기 | 사람이 미리보기 확정 (확정 전 화면 구현 금지) |
+| 05 | 기술설계 | planner ↔ codex-designer · diagrammer (팀장 승인) | `04_API.md` · `05_DATA_MODEL.md` · ERD · ADR · 작업 분해 | 위험 높음이면 `challenger` PROCEED |
+| 06 | 구현 | builder (+ tester) | 코드 · 테스트 · 커밋 | 완료 조건 명령 통과 |
+| 07 | QA | codex-reviewer (+ reviewer security/contract) | 리뷰 판정 · 🔴 목록 | 🔴 0건 (Codex 불가 시 reviewer 대체) |
+| 08 | 배포 | builder + 팀장 승인 | 배포 설정 · 보안 레벨별 `/secure setup` | PRD 8장 레벨 점검 통과 |
+| 09 | 개선 | 팀장 + planner · codex-designer | 지표 점검 · 다음 작업 분해 | 새 기능이면 02로, 아니면 종료 |
+
+```mermaid
+flowchart LR
+  S1["01 검증"] --> S2["02 기획"]
+  subgraph LOOP["기능 단위 반복 02~07"]
+    S2 --> S3["03 UX"] --> S4["04 UI"] --> S5["05 기술설계"] --> S6["06 구현"] --> S7["07 QA"]
+    S7 -->|🔴 있음| S6
+  end
+  S7 -->|통과| S8["08 배포"] --> S9["09 개선"]
+  S9 -->|다음 기능| S2
+```
+
+**공동 작업 규칙**: 초안은 Sonnet과 Codex가 나눠 쓰고, 변경분만 교차 검토 1회. 심각한 충돌이면 1회 더. 그 뒤에는 Opus가 결정한다. 작은 수정은 교차 검토를 생략한다.
+
+### 3.6 모델 한도 대응 (반자동)
+
+Claude 한도가 완전히 소진되면 Claude 안에서 `/handoff`를 실행할 수 없다. 그래서 이관 도구 `handoff`는 **모델 없이 터미널에서 도는 스크립트**이고, 체크포인트(NOW.md)는 단계마다 미리 갱신해 둔다.
+
+| 상황 | 대응 | 방법 |
+|---|---|---|
+| Opus만 제한 | Sonnet이 임시 팀장 | `handoff sonnet` (실행 안내 + 임시 팀장 지시 출력) |
+| Sonnet 제한 | Codex로 이관 | `handoff codex` |
+| Claude 전체 제한 | Codex로 이관 | `handoff codex` (터미널에서 직접 실행) |
+| Codex도 제한 | 다른 가용 모델 확인 | `~/.codex/config.toml`의 경량 모델 또는 로컬 LLM(`oss`) |
+| 모두 제한 | 체크포인트 저장 후 안전 중단 | NOW.md 최신화, 한도 해제 후 재개 |
+| 추가 API 사용 | 사용자 승인 후, 승인한 예산 내에서만 | 예산 값은 프로젝트마다 사용자가 정한다 — 정하지 않았으면 추가 API를 쓰지 않는다 |
+
+| 도구 | 하는 일 |
+|---|---|
+| `tasks/NOW.md` 체크포인트 | 단계마다 갱신: SDLC 단계 · 담당 모델/역할 · 수정 파일 · 테스트 상태 · 남은 작업 |
+| `handoff codex [--dry-run]` | NOW.md · 바뀐 파일 목록 · diff 요약 · 마지막 `q` 실패를 `.nomad/handoff/<시각>.md`로 묶고 Codex를 실행 |
+| `handoff claude` | Codex 작업 뒤 Claude로 복귀하는 재진입 프롬프트 출력 |
+| `/handoff` | Claude가 살아 있을 때: NOW.md 갱신 → `delta --checkpoint` → `handoff codex --dry-run` 경로 안내 |
+
+**향후 설계**: 한도 감지와 모델 전환을 사람 없이 수행하는 완전 자동 Supervisor는 아직 만들지 않는다.
 
 ---
 
@@ -269,11 +332,12 @@ sequenceDiagram
 
 | 단계 | 할 일 | 확인 |
 |---|---|---|
-| 0일 | `bash install.sh` (Windows Git Bash) → 새 터미널 | `/agents`에 10개, `token-audit` 예산 안 |
-| 1일 | 진행 중 프로젝트 1개에 `install.sh init` → AGENTS.md 채우기 | `/next`로 작업 1개 완주 |
-| 1주 | platform-docs 제품 1개(SceneFlow)를 이 구조로: 제품 CLAUDE.md → AGENTS.md + rules 분할, `sql2erd`·`deps2mmd`로 그림 갱신 | 작업당 토큰(`/usage`) 비교 |
-| 2주 | Ollama 설치 → `oss`로 커밋 메시지·로그 요약 이관 | 유료 토큰 감소 |
-| 1개월 | 교훈 반영해 TEAM.md·에이전트 조정, 제품 16개로 확장 | `token-audit` 경고 0 유지 |
+| 1 기반 | 설치(`install.sh`) · 팀원 12명 · TEAM.md · `nomad-doctor` | `/agents`에 12개, `token-audit` 예산 안 |
+| 2 공동 기획/디자인 | planner ↔ codex-designer 초안 분업 + 변경분 교차 검토 1회 | `/plan` · `/design` 1회 완주 |
+| 3 다이어그램 표준 | Mermaid 원본(`docs/diagrams/*.mmd`)을 Git으로 관리, Figma는 보조 | `mmd-check` 통과 |
+| 4 구현·리뷰 | builder 구현 → codex-reviewer 독립 검증 (불가 시 reviewer) | `/next`로 작업 1개 완주 |
+| 5 토큰·장애 관리 | 단계별 NOW.md 체크포인트 · `handoff` · 한도 대응 정책(3.6) | `handoff codex --dry-run` 생성 확인 |
+| 6 실전 검증 10건 | 실제 작업 10건에 적용해 토큰·품질·한도 대응을 측정 | 10건 기록 (현재 0건, `미확인`) |
 
 ---
 
