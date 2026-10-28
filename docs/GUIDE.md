@@ -14,7 +14,7 @@
 
 ## 1. NOMAD란
 
-NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정 모음입니다. 사용자가 여는 주 세션이 팀장(Opus 5.5)이 되어 일을 나누고, 싼 모델의 팀원 10명이 기획 · 구현 · 디자인 · 테스트 · 리뷰를 맡습니다. 같은 파일을 반복해서 읽지 않게 막고, 그림 · 문서 뼈대는 모델 대신 스크립트가 만들어 토큰을 아낍니다. ChatGPT(Codex) · Gemini CLI도 같은 규칙(`AGENTS.md`)을 읽습니다. 도메인 기획 청사진(CRM · LMS 등)은 본체에 넣지 않고 **모듈**로 필요할 때만 가져옵니다.
+NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정 모음입니다. 사용자가 여는 주 세션이 팀장(Opus 5.5)이 되어 일을 나누고, 팀원 12명(Claude 10명 + Codex 중계 2명)이 기획 · 디자인 · 구현 · 테스트 · 독립 검증을 맡습니다. 기획 · 디자인은 Sonnet과 Codex가 초안을 나눠 쓰고, 구현은 Sonnet, 검증은 Codex가 따로 합니다. 같은 파일을 반복해서 읽지 않게 막고, 그림 · 문서 뼈대는 모델 대신 스크립트가 만들어 토큰을 아낍니다. ChatGPT(Codex) · Gemini CLI도 같은 규칙(`AGENTS.md`)을 읽습니다. 도메인 기획 청사진(CRM · LMS 등)은 본체에 넣지 않고 **모듈**로 필요할 때만 가져옵니다.
 
 ### 팀 구조
 
@@ -24,6 +24,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 | 팀장 | (주 세션) | Opus 5.5 | 나누고 · 맡기고 · 판단. 한 줄 수정은 직접 |
 | 검증 | challenger | Opus 5.5 | 결제 · 인증 · DB 같은 위험한 계획을 착수 전에 공격 |
 | 대리 | builder · planner · designer · tester · reviewer | Sonnet 5.5 | 구현 · 문서 · 디자인 · 테스트 · 리뷰 |
+| 공동 디자인 · 독립 검증 | codex-designer · codex-reviewer | Codex (중계는 Haiku 5.5) | UX 초안 · 교차 검토 / 코드 · 디자인 · 접근성 · 보안 독립 검증 |
 | 사원 | scout · intern · diagrammer | Haiku 5.5 | 찾기 · 반복 작업 · 그림 |
 
 원칙: 팀원끼리 서로 부르지 않고(깊이 1), commit · push는 팀장만 합니다.
@@ -85,8 +86,8 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 
 | 항목 | 수량 |
 |---|---|
-| 팀원 (`agents/`) | 10명 |
-| 스킬 · 슬래시 명령 | 각 9개 |
+| 팀원 (`agents/`) | 12명 (codex-designer · codex-reviewer는 Codex CLI가 있을 때만 동작) |
+| 스킬 · 슬래시 명령 | 스킬 9개 · 명령 10개 |
 | 도구 (`nomad/bin/`) + `nomad-os` 명령 · 모듈 등록 목록 | 19개 (`nomad-doctor` 기준) |
 | 반복 읽기 차단 훅 (`settings.json`) | 있음 |
 
@@ -96,7 +97,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 |---|---|
 | Claude Code에서 `/agent-check` | 전역 설치 · 프로젝트 적용 · 모듈 · 사양 상태를 한 번에 점검. 안전한 것은 `/agent-check fix`로 자동 구성 |
 | `token-audit <프로젝트 경로>` | `■ 예산 안 ✅` |
-| Claude Code에서 `/agents` | 팀원 10명이 보임 |
+| Claude Code에서 `/agents` | 팀원 12명이 보임 |
 
 ---
 
@@ -138,7 +139,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 
 ---
 
-## 5. 팀원 10명
+## 5. 팀원 12명
 
 팀장이 알아서 나눠 맡기므로 직접 부를 일은 거의 없습니다. `/agents`로 확인합니다.
 
@@ -154,6 +155,10 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 | reviewer | Sonnet 5.5 | 변경 후 적대적 리뷰 (읽기 전용). mode: code · contract · security · doc · design | 직접 고치기 |
 | challenger | Opus 5.5 | 위험한 계획을 착수 전에 공격 (읽기 전용) | 일상 작업 — 비용만 늘어남 |
 | advisor | Fable 5.1 | 같은 문제 2회 실패 후 근본 원인 진단 | 일상 작업 · 착수 전 검토 (부르지 않음) |
+| codex-designer | Codex (Haiku 5.5 중계) | (선택) 공동 기획 · UX 초안 작성과 Sonnet 초안의 변경분 교차 검토. `docs/**` · `design/**` 쓰기. Codex CLI 설치·로그인(`codex login`) 필요 — `codex exec`로 호출 | Codex 미설치 시 (호출 실패 → `designer`로 대체) |
+| codex-reviewer | Codex (Haiku 5.5 중계) | (선택) 독립 품질 검증 (읽기 전용). `git diff` + 관련 파일만 보고 code · design · a11y · security 지적. 같은 Codex CLI 로그인(`codex login`) 필요 — `codex exec`로 호출 | Codex 미설치 시 (호출 실패 → `reviewer`로 대체) |
+
+Codex 모델은 `~/.codex/config.toml`의 기본값을 따릅니다. Codex 팀원이 한도 · 미설치로 실패하면 `상태: Codex 불가`를 보고하고, 팀장이 Claude 팀원으로 대체합니다.
 
 팀장이 직접 하는 일: 한 줄 수정, 위임 비용이 더 큰 일.
 
@@ -173,9 +178,9 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 
 | 위험 | 예 | 착수 전 | 변경 후 |
 |---|---|---|---|
-| 낮음 | 화면 문구 · 스타일 · 문서 | — | builder 자가 검증(`q`), 화면이면 reviewer(design) |
-| 보통 | 기능 · API · 컴포넌트 | — | reviewer(code) |
-| 높음 | 결제 · 인증 · RLS · 마이그레이션 · 외부 계약 · 새 의존성 · 노출 면 · 키 권한 | challenger | reviewer(code)+(security/contract) → 필요 시 tester |
+| 낮음 | 화면 문구 · 스타일 · 문서 | — | builder 자가 검증(`q`), 화면이면 codex-reviewer(design) |
+| 보통 | 기능 · API · 컴포넌트 | — | codex-reviewer(code) |
+| 높음 | 결제 · 인증 · RLS · 마이그레이션 · 외부 계약 · 새 의존성 · 노출 면 · 키 권한 | challenger | codex-reviewer(code) + reviewer(security/contract) → 필요 시 tester |
 
 ---
 
@@ -192,6 +197,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 | `/next` | 개발 반복 · 쉬었다 이어갈 때 | 다음 작업 하나를 계획 → 위임 → 검증 → 커밋까지. 끝나면 `/clear` 후 다시 `/next` |
 | `/check` | 수시로 | 린트 · 타입 · 테스트를 돌리고 실패만 요약 |
 | `/secure` · `/secure setup [--ci]` | 보안 점검 · GitHub 저장소가 생긴 뒤 | SBOM · 취약점 · 라이선스 점검 / Dependabot · SECURITY.md · CI SBOM 생성 |
+| `/handoff` | 모델 한도가 가까울 때 (Claude가 아직 살아 있을 때) | `tasks/NOW.md` 갱신 → `delta --checkpoint` → `handoff codex --dry-run`으로 이관 파일 경로 안내 |
 | `/token-audit` | 컨텍스트가 무거워졌을 때 | 항상 읽히는 설정의 토큰 측정과 줄일 곳 제안 |
 | `/oss 지시` | 단순 텍스트 작업 | 로컬 LLM(Ollama 등)에 맡기고 결과 파일만 받기 |
 
@@ -212,6 +218,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 | `codemap` · `delta` | 파일 · 함수 지도 / 바뀐 줄 · 바뀐 파일만 | `codemap src` · `delta --changed` |
 | `deps2mmd` · `sql2erd` · `mmd-check` | 코드 import → 구조도 / SQL → ERD / Mermaid 검증 | `sql2erd supabase/migrations -o docs/diagrams/erd.mmd` |
 | `token-audit` · `oss` | 상시 로드 토큰 측정 / 로컬 LLM 위임 | `token-audit .` · `oss "3줄 요약" log.txt` |
+| `handoff` | 모델 한도 때 이관 (모델 없이 터미널에서 실행). Opus만 제한 → `sonnet`, Sonnet · Claude 제한 → `codex`, 돌아올 때 → `claude` | `handoff codex --dry-run` · `handoff sonnet` · `handoff claude` |
 
 전체 목록은 [레퍼런스](REFERENCE.md)를 봅니다.
 
@@ -219,17 +226,23 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 
 ## 7. 기본 작업 흐름
 
-### 새 프로젝트
+### 새 프로젝트 — SDLC 9단계
 
-| 단계 | 하는 일 | 명령 |
+먼저 `nomad-os init <경로> --name "<제품명>"` → `cd` → `git init -b main` → `claude`로 적용합니다. 이후 아래 9단계를 따르며, 02~07은 **기능 하나씩 반복**합니다. 단계가 끝날 때마다 `tasks/NOW.md`가 갱신됩니다.
+
+| 단계 | 하는 일 | 명령 · 담당 |
 |---|---|---|
-| 1 | 적용 | `nomad-os init <경로> --name "<제품명>"` → `cd` → `git init -b main` → `claude` |
-| 2 | 기획 | `/plan <제품명>` — 린 검증(00_LEAN) 통과 전에는 개발 작업을 만들지 않음. 제품 방향 질문만 사용자에게 물음 |
-| 3 | 그림 (선택) | `/diagram 회원가입 흐름` |
-| 4 | 디자인 | `/design` — 브리프(대상 · 주된 일 · 분위기 3단어 · 피할 것)에 답 → 토큰 · 미리보기 → 브라우저로 보고 수정 요청 → 확정 |
-| 5 | AGENTS.md 확정 | `기획 문서 기준으로 AGENTS.md 채워줘` |
-| 6 | 개발 반복 | `/next` → `/clear` → `/next` → `/clear` … (작업 하나가 끝날 때마다 자동 커밋) |
-| 7 | 올리기 | `gh repo create <계정>/<프로젝트명> --private --source . --push` |
+| 01 검증 | 린 검증(00_LEAN) 통과 전에는 개발 작업을 만들지 않음 | `/plan <제품명>` · 제품 방향 질문만 사용자에게 물음 |
+| 02 기획 | PRD 작성. planner와 codex-designer가 초안을 나눠 쓰고 변경분만 교차 검토 1회 (심각한 충돌이면 1회 더, 이후 팀장이 결정) | `/plan` |
+| 03 UX | 화면 · 흐름 표, 와이어프레임 | `/plan` · `/diagram 회원가입 흐름` (선택) · `plan2spec` |
+| 04 UI | 브리프(대상 · 주된 일 · 분위기 3단어 · 피할 것)에 답 → 토큰 · 미리보기 → 브라우저로 보고 수정 요청 → 확정 | `/design` |
+| 05 기술설계 | API · 데이터 · ERD · 작업 분해. `기획 문서 기준으로 AGENTS.md 채워줘` | `/plan` · `/diagram erd` |
+| 06 구현 | 작업 하나씩 구현 후 자동 커밋 | `/next` → `/clear` → `/next` … |
+| 07 QA | codex-reviewer가 독립 검증 (Codex를 못 쓰면 reviewer가 대신) | `/next`에 포함 · `/check` |
+| 08 배포 | 저장소 올리기, 보안 설정 | `gh repo create <계정>/<프로젝트명> --private --source . --push` · `/secure setup --ci` |
+| 09 개선 | 결과를 보고 다음 기능을 02부터 다시 | `/plan` |
+
+모델 한도에 걸리면 [명령어](#6-명령어)의 `/handoff` · `handoff`로 이어서 작업합니다(Opus만 제한 → Sonnet이 임시 팀장, 그 외 → Codex). 정책 표는 [ARCHITECTURE](ARCHITECTURE.md) 3.6장을 봅니다.
 
 ### 내 상황별 첫 명령
 

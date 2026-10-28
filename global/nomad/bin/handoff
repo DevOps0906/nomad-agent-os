@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+# handoff — 모델 한도 시 작업을 Codex/Sonnet으로 넘기는 터미널 도구 (모델 토큰 0)
+exec bash "$(cd "$(dirname "$0")" && pwd)/_py" handoff "$@"

@@ -20,6 +20,20 @@ description: 구조도·흐름도·시퀀스·상태도·ERD·마인드맵을 Me
 | 기능 구조·아이디어 | `mindmap` | |
 | 사용자 여정 | `journey` | |
 
+## 표준 8종 × 적용 단계
+| 다이어그램 | Mermaid | SDLC 단계 |
+|---|---|---|
+| 기능 맵 | `mindmap` | 02 기획 |
+| 사용자 흐름 | `flowchart` | 03 UX |
+| 사이트맵/IA | `flowchart TD` | 03 UX |
+| 시스템 아키텍처 | `flowchart LR` | 05 기술 설계 |
+| ERD | `erDiagram`(`sql2erd`) | 05 기술 설계 |
+| API 시퀀스 | `sequenceDiagram` | 05 기술 설계 |
+| 멀티에이전트 워크플로 | `flowchart` | 05 기술 설계(AI 시스템) |
+| 배포 구조도 | `flowchart LR` | 08 배포 |
+
+Mermaid 원본 `docs/diagrams/*.mmd` 필수. FigJam·Figma는 Figma MCP가 있을 때 보조로만 쓴다.
+
 ## 규칙
 1. 파일 하나에 다이어그램 하나: `docs/diagrams/<이름>.mmd`. 문서에는 경로로 링크하거나 코드블록으로 그대로 포함한다.
 2. 노드 ID는 짧은 영문(`api`, `db`), 표시 이름은 한국어 라벨(`api["API 서버"]`). 라벨에 괄호·따옴표가 있으면 `"..."`로 감싼다.

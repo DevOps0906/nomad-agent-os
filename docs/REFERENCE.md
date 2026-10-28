@@ -111,9 +111,9 @@ flowchart LR
     DOC["docs/ARCHITECTURE.md"]
   end
   subgraph HOME["~/.claude (전역 · 모든 프로젝트 공유)"]
-    HA["agents/ 팀 10명"]
+    HA["agents/ 팀 12명"]
     HS["skills/ 9개"]
-    HC["commands/ 9개"]
+    HC["commands/ 10개"]
     HN["nomad/ 규칙 + bin 도구"]
     HM["CLAUDE.md 맨 위에 @nomad/TEAM.md"]
     HJ["settings.json 에 읽기 훅 병합"]
