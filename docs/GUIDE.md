@@ -156,7 +156,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 | challenger | Opus 5.5 | 위험한 계획을 착수 전에 공격 (읽기 전용) | 일상 작업 — 비용만 늘어남 |
 | advisor | Fable 5.1 | 같은 문제 2회 실패 후 근본 원인 진단 | 일상 작업 · 착수 전 검토 (부르지 않음) |
 | codex-designer | Codex (Haiku 5.5 중계) | (선택) 공동 기획 · UX 초안 작성과 Sonnet 초안의 변경분 교차 검토. `docs/**` · `design/**` 쓰기. Codex CLI 설치·로그인(`codex login`) 필요 — `codex exec`로 호출 | Codex 미설치 시 (호출 실패 → `designer`로 대체) |
-| codex-reviewer | Codex (Haiku 5.5 중계) | (선택) 독립 품질 검증 (읽기 전용). `git diff` + 관련 파일만 보고 code · design · a11y · security 지적. 같은 Codex CLI 로그인 + `claude mcp add codex …` 필요 | Codex 미설치 시 (호출 실패 → `reviewer`로 대체) |
+| codex-reviewer | Codex (Haiku 5.5 중계) | (선택) 독립 품질 검증 (읽기 전용). `git diff` + 관련 파일만 보고 code · design · a11y · security 지적. 같은 Codex CLI 로그인(`codex login`) 필요 — `codex exec`로 호출 | Codex 미설치 시 (호출 실패 → `reviewer`로 대체) |
 
 Codex 모델은 `~/.codex/config.toml`의 기본값을 따릅니다. Codex 팀원이 한도 · 미설치로 실패하면 `상태: Codex 불가`를 보고하고, 팀장이 Claude 팀원으로 대체합니다.
 
