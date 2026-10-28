@@ -23,5 +23,5 @@
 - 산출: 긴 결과는 파일로 쓰고 경로와 5줄 요약만 돌려준다.
 - 그림: 구조도·흐름도·ERD는 Mermaid 텍스트로. SVG·draw.io XML을 직접 생성하지 않는다. ERD는 `sql2erd`로 기계 생성.
 - 생성: 문서 뼈대는 `plan-scaffold`, 디자인 미리보기는 `design-preview`, 구조도는 `deps2mmd`, ERD는 `sql2erd` — 모델은 내용과 판단만 쓴다.
-- 작업 하나가 끝나면 `tasks/NOW.md`를 갱신하고 `delta --checkpoint` 후 맥락을 비운다(`/clear`).
+- SDLC 단계·작업 단계가 끝날 때마다 `tasks/NOW.md`(단계·담당 모델·수정 파일·테스트 상태·남은 작업)를 갱신한다 — 모델 한도로 끊겨도 `handoff`로 이어 간다. 작업 하나가 끝나면 `delta --checkpoint` 후 맥락을 비운다(`/clear`).
 - 도구 위치: `~/.claude/nomad/bin/` (PATH에 추가하면 이름만으로 실행).

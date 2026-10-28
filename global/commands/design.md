@@ -6,8 +6,8 @@ description: 디자인 시스템을 토큰 중심으로 만들거나 수정(반�
 0. 화면 표가 있으면 `~/.claude/nomad/bin/plan2spec` — 와이어프레임(`design/wireframes/`)이 시안 초안이다. 🔴가 있으면 기획부터 고친다.
 1. 기존 토큰 파일·DESIGN.md를 `scout`로 찾는다. 있으면 이름·구조는 유지한다.
 2. 팀장이 브리프(대상·주된 일·분위기 3단어·피할 것)를 10줄로 쓴다. 비어 있으면 후보를 제안하고 확인받는다.
-3. `designer`가 토큰 값을 정하고(없으면 `design-preview --init`), 미리보기·표는 `design-preview`가 자동 생성한다(모델이 HTML을 쓰지 않음).
+3. `designer`와 `codex-designer`(Codex 중계, 불가 시 designer만)가 공동 디자인하고 변경분을 교차 검토한다(1회, 심각 충돌 시 1회 추가, 이후 팀장 결정). 토큰 값은 designer가 정하고(없으면 `design-preview --init`), 미리보기·표는 `design-preview`가 자동 생성한다(모델이 HTML을 쓰지 않음).
 4. 검사(스크립트): `design-preview <tokens> --check --scan <컴포넌트 폴더>`(대비·토큰 우회) → `plan2spec`(토큰이 바뀌면 시안 전체 갱신) →
    `shot design/wireframes`(375·768·1280·1440 스크린샷). ❌는 토큰 값만 고쳐 다시 실행.
 5. 사용자가 `design/preview.html`과 `design/wireframes/index.html`을 보고 확정할 때까지 화면 구현 작업을 시작하지 않는다.
-6. 수정 요청은 토큰 diff로만 반영한다(화면 코드 재작성 금지). 구현된 화면은 `reviewer`(mode=design)가 `shot <URL>`로 확인한다.
+6. 수정 요청은 토큰 diff로만 반영한다(화면 코드 재작성 금지). 구현된 화면은 `codex-reviewer`(mode=design, 불가 시 `reviewer`)가 `shot <URL>`로 확인한다.
