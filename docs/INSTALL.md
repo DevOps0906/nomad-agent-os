@@ -49,7 +49,7 @@ bash install.sh
 
 `~/.claude` 폴더에 들어갑니다. 모든 프로젝트가 같이 씁니다.
 
-- 팀원 10명 (`agents/`)
+- 팀원 11명 (`agents/`, codex는 선택)
 - 스킬 9개 · 슬래시 명령 9개 (보안 `security-baseline` · 화면 구조 `ux-patterns` · `/secure` 포함)
 - 도구 18개 (`nomad/bin/`) + 어디서든 쓰는 `nomad-os` 명령 · 모듈 등록 목록(`modules.json`)
 - 반복 읽기 차단 훅 (`settings.json`)
@@ -154,7 +154,7 @@ token-audit ~/workspace/dev/내프로젝트명
 ```
 
 `■ 예산 안 ✅`이 나오면 정상입니다.
-그다음 프로젝트 폴더에서 `claude`를 실행하고 `/agents`를 입력합니다. 팀원 10명이 보이면 끝입니다.
+그다음 프로젝트 폴더에서 `claude`를 실행하고 `/agents`를 입력합니다. 팀원 11명이 보이면 끝입니다.
 
 > `token-audit`를 찾지 못하면 새 터미널을 열었는지 확인합니다.
 

@@ -111,7 +111,7 @@ flowchart LR
     DOC["docs/ARCHITECTURE.md"]
   end
   subgraph HOME["~/.claude (전역 · 모든 프로젝트 공유)"]
-    HA["agents/ 팀 10명"]
+    HA["agents/ 팀 11명"]
     HS["skills/ 9개"]
     HC["commands/ 9개"]
     HN["nomad/ 규칙 + bin 도구"]

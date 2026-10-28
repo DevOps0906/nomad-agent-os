@@ -4,7 +4,7 @@
 사용: nomad-doctor [프로젝트=.] [--fix] [--json]
 점검: ① 전역 설치(팀원·스킬·명령·도구·훅·CLAUDE.md, 본체 레포와 같은 버전인지) ② 프로젝트 적용(AGENTS.md·규칙·
       tasks·읽기 차단·.gitignore, 템플릿 미작성, 규칙 경로 불일치, 같은 이름 팀원 충돌) ③ 모듈 ④ 기획→시안(spec 최신)
-      ⑤ 보안 기본 ⑥ 준비물(Python·git·Node·Chrome) ⑦ 상시 로드 토큰
+      ⑤ 보안 기본 ⑥ 준비물(Python·git·Node·Chrome)·Codex(선택: CLI·MCP·서브에이전트) ⑦ 상시 로드 토큰
 --fix: 안전한 것만 고친다 — 전역 재설치 · 프로젝트 init(기존 파일 보존·병합) · plan2spec. 삭제는 하지 않는다.
 """
 import argparse, glob, hashlib, importlib.util, json, os, re, shutil, subprocess, sys
@@ -116,7 +116,7 @@ def check_global(repo):
 
 # ---------- ② 프로젝트 ----------
 TEMPLATE_MARKS = ["<프로젝트명>", "<한 문장", "<프로젝트 고유 규칙"]
-NOMAD_AGENTS = {"advisor", "builder", "challenger", "designer", "diagrammer", "intern", "planner", "reviewer", "scout", "tester"}
+NOMAD_AGENTS = {"advisor", "builder", "challenger", "codex", "designer", "diagrammer", "intern", "planner", "reviewer", "scout", "tester"}
 
 
 def check_project(proj, repo):
@@ -240,6 +240,31 @@ def check_tools():
     add("준비물", "Chrome·Edge", "✅" if br else "⚠️", os.path.basename(br) if br else "없음 — shot(3구간 스크린샷) 불가")
 
 
+def check_codex():
+    """선택: Codex CLI → MCP 서버(codex) → 서브에이전트(codex.md). 없으면 ℹ️ 만."""
+    exe = shutil.which("codex")
+    if not exe:
+        add("Codex(선택)", "Codex CLI", "ℹ️", "없음 — 쓰려면 npm i -g @openai/codex"); return
+    try:
+        r = subprocess.run([exe, "login", "status"], capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=20)
+        out = (r.stdout + r.stderr).strip()
+        add("Codex(선택)", "Codex CLI", "✅" if r.returncode == 0 else "⚠️", out.splitlines()[-1] if r.returncode == 0 and out else "로그인 안 됨 → codex login")
+    except Exception:
+        add("Codex(선택)", "Codex CLI", "⚠️", "상태 확인 실패 — codex login status")
+    try:
+        with open(os.path.join(os.path.dirname(CL), ".claude.json"), encoding="utf-8") as f: cfg = json.load(f)
+    except Exception:
+        cfg = {}
+    mcp = "codex" in (cfg.get("mcpServers") or {})
+    add("Codex(선택)", "MCP 서버", "✅" if mcp else "⚠️", "codex 등록됨 (사용자 범위)" if mcp else "미등록 → claude mcp add codex -s user -- cmd /c codex mcp-server (macOS·Linux는 cmd /c 빼기)")
+    ag = os.path.join(CL, "agents", "codex.md")
+    if not os.path.exists(ag):
+        add("Codex(선택)", "서브에이전트", "ℹ️", "~/.claude/agents/codex.md 없음 (MCP 도구를 팀장이 직접 호출해도 됨)"); return
+    with open(ag, encoding="utf-8") as f: uses = "mcp__codex__" in f.read()
+    st = "✅" if uses and mcp else "⚠️"
+    add("Codex(선택)", "서브에이전트", st, "codex.md → mcp__codex__* 사용" + ("" if mcp or not uses else " — 그런데 MCP 서버가 없어 호출 실패") + ("" if uses else " 안 함 — tools 에 mcp__codex__codex 추가"))
+
+
 def check_tokens(proj):
     try:
         r = subprocess.run([sys.executable, os.path.join(HERE, "token-audit.py"), proj, "--json"], capture_output=True, text=True, encoding="utf-8", timeout=60)
@@ -280,7 +305,7 @@ def main():
         add("프로젝트", "대상", "ℹ️", "NOMAD 본체 레포 안 — 프로젝트 점검 생략 (프로젝트 폴더에서 실행)")
     else:
         check_project(proj, repo); check_modules(proj); check_spec(proj); check_security(proj)
-    check_tools(); check_tokens(proj)
+    check_tools(); check_codex(); check_tokens(proj)
     if a.json:
         print(json.dumps({"repo": repo, "project": proj, "rows": ROWS, "fixes": {k: v[0] for k, v in FIX.items()}}, ensure_ascii=False)); return 0
     bad = sum(r[2] == "❌" for r in ROWS); warn = sum(r[2] == "⚠️" for r in ROWS)

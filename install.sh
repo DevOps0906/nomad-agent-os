@@ -158,6 +158,6 @@ add_core() { # add_core <전역 지시 파일> <도구 이름>
 [[ " $* " == *" --codex "* ]] && add_core "$HOME/.codex/AGENTS.md" "ChatGPT Codex"
 [[ " $* " == *" --gemini "* ]] && add_core "$HOME/.gemini/GEMINI.md" "Gemini CLI"
 
-echo "■ 완료. 확인: ~/.claude/nomad/bin/token-audit <프로젝트>   ·   Claude Code에서 /agents 로 팀 10명 확인"
+echo "■ 완료. 확인: ~/.claude/nomad/bin/token-audit <프로젝트>   ·   Claude Code에서 /agents 로 팀 11명 확인"
 [ -d "$BK" ] && echo "  (교체·병합 전 원본 백업: $BK)"
 exit 0

@@ -85,7 +85,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 
 | 항목 | 수량 |
 |---|---|
-| 팀원 (`agents/`) | 10명 |
+| 팀원 (`agents/`) | 11명 (codex는 Codex CLI가 있을 때만 동작) |
 | 스킬 · 슬래시 명령 | 각 9개 |
 | 도구 (`nomad/bin/`) + `nomad-os` 명령 · 모듈 등록 목록 | 19개 (`nomad-doctor` 기준) |
 | 반복 읽기 차단 훅 (`settings.json`) | 있음 |
@@ -96,7 +96,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 |---|---|
 | Claude Code에서 `/agent-check` | 전역 설치 · 프로젝트 적용 · 모듈 · 사양 상태를 한 번에 점검. 안전한 것은 `/agent-check fix`로 자동 구성 |
 | `token-audit <프로젝트 경로>` | `■ 예산 안 ✅` |
-| Claude Code에서 `/agents` | 팀원 10명이 보임 |
+| Claude Code에서 `/agents` | 팀원 11명이 보임 |
 
 ---
 
@@ -138,7 +138,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 
 ---
 
-## 5. 팀원 10명
+## 5. 팀원 11명
 
 팀장이 알아서 나눠 맡기므로 직접 부를 일은 거의 없습니다. `/agents`로 확인합니다.
 
@@ -154,6 +154,7 @@ NOMAD Agent OS는 Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정
 | reviewer | Sonnet 5.5 | 변경 후 적대적 리뷰 (읽기 전용). mode: code · contract · security · doc · design | 직접 고치기 |
 | challenger | Opus 5.5 | 위험한 계획을 착수 전에 공격 (읽기 전용) | 일상 작업 — 비용만 늘어남 |
 | advisor | Fable 5.1 | 같은 문제 2회 실패 후 근본 원인 진단 | 일상 작업 · 착수 전 검토 (부르지 않음) |
+| codex | Haiku 5.5 (중계) | (선택) OpenAI Codex에 작업을 넘기고 결과 요약 — 교차 검증 · Claude 사용량 절약. Codex CLI 로그인 + `claude mcp add codex -s user -- cmd /c codex mcp-server` 필요 (macOS·Linux는 `cmd /c` 빼기) | Codex 미설치 시 (호출 실패) |
 
 팀장이 직접 하는 일: 한 줄 수정, 위임 비용이 더 큰 일.
 
