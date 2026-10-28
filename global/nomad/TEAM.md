@@ -10,12 +10,12 @@
 | 파일·코드 위치 탐색, 구조 요약 | `scout` | haiku-5-5 |
 | 규칙이 한 문장인 반복 작업(추출·변환·시드·일괄 수정) | `intern` | haiku-5-5 |
 | 공동 기획: PRD·기능 명세·기술 타당성·ADR·작업 분해 | `planner` | sonnet-5-5 |
-| 공동 디자인: UX·IA·사용자 흐름·와이어·Figma·다이어그램 초안, planner 초안 교차 검토 | `codex-designer` | Codex(config 기본) |
+| 공동 디자인: UX·IA·사용자 흐름·와이어·Figma·다이어그램 초안, planner 초안 교차 검토 | `codex-designer` | Codex(gpt-6.1-sol) |
 | 디자인 토큰·DESIGN.md·화면 미리보기 | `designer` | sonnet-5-5 |
 | 구조도·흐름도·시퀀스·ERD (Mermaid) | `diagrammer` | haiku-5-5 |
 | 구현·수정·리팩터링 (스택 스킬을 읽고 작업) | `builder` | sonnet-5-5 |
 | 테스트 작성·실행 | `tester` | sonnet-5-5 |
-| 독립 품질 검증 (diff 중심, mode: code·design·a11y·security) | `codex-reviewer` | Codex(config 기본) |
+| 독립 품질 검증 (diff 중심, mode: code·design·a11y·security) | `codex-reviewer` | Codex(sol · design·a11y=terra · 고난도=astra) |
 | 리뷰 (mode: code·contract·security·doc·design) — Codex 불가 시 대체 | `reviewer` | sonnet-5-5 |
 | 착수 전 계획 공격 (위험 작업만) | `challenger` | opus-5-5 |
 | 같은 문제로 2회 실패 후에만 | `advisor` (고문) | fable-5-1 |

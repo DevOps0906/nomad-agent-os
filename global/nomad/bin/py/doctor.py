@@ -4,7 +4,7 @@
 사용: nomad-doctor [프로젝트=.] [--fix] [--json]
 점검: ① 전역 설치(팀원·스킬·명령·도구·훅·CLAUDE.md, 본체 레포와 같은 버전인지) ② 프로젝트 적용(AGENTS.md·규칙·
       tasks·읽기 차단·.gitignore, 템플릿 미작성, 규칙 경로 불일치, 같은 이름 팀원 충돌) ③ 모듈 ④ 기획→시안(spec 최신)
-      ⑤ 보안 기본 ⑥ 준비물(Python·git·Node·Chrome)·Codex(선택: CLI·MCP·codex-designer·codex-reviewer) ⑦ 상시 로드 토큰
+      ⑤ 보안 기본 ⑥ 준비물(Python·git·Node·Chrome)·Codex(선택: CLI·exec·codex-designer·codex-reviewer) ⑦ 상시 로드 토큰
 --fix: 안전한 것만 고친다 — 전역 재설치 · 프로젝트 init(기존 파일 보존·병합) · plan2spec. 삭제는 하지 않는다.
 """
 import argparse, glob, hashlib, importlib.util, json, os, re, shutil, subprocess, sys
@@ -241,7 +241,7 @@ def check_tools():
 
 
 def check_codex():
-    """선택: Codex CLI → MCP 서버(codex) → 서브에이전트(codex.md). 없으면 ℹ️ 만."""
+    """선택: Codex CLI → codex exec → 서브에이전트. 없으면 ℹ️ 만."""
     exe = shutil.which("codex")
     if not exe:
         add("Codex(선택)", "Codex CLI", "ℹ️", "없음 — 쓰려면 npm i -g @openai/codex"); return
@@ -252,18 +252,23 @@ def check_codex():
     except Exception:
         add("Codex(선택)", "Codex CLI", "⚠️", "상태 확인 실패 — codex login status")
     try:
+        ok = subprocess.run([exe, "exec", "--help"], capture_output=True, timeout=20).returncode == 0
+    except Exception:
+        ok = False
+    add("Codex(선택)", "codex exec", "✅" if ok else "⚠️", "비대화 실행 지원" if ok else "codex exec 없음 → npm i -g @openai/codex@latest")
+    try:
         with open(os.path.join(os.path.dirname(CL), ".claude.json"), encoding="utf-8") as f: cfg = json.load(f)
     except Exception:
         cfg = {}
-    mcp = "codex" in (cfg.get("mcpServers") or {})
-    add("Codex(선택)", "MCP 서버", "✅" if mcp else "⚠️", "codex 등록됨 (사용자 범위)" if mcp else "미등록 → claude mcp add codex -s user -- cmd /c codex mcp-server (macOS·Linux는 cmd /c 빼기)")
+    if "codex" in (cfg.get("mcpServers") or {}):
+        add("Codex(선택)", "구 MCP 등록", "ℹ️", "v3.0부터 codex exec 사용 — 연결 실패 알림이 뜨면 claude mcp remove codex -s user")
     for name in ("codex-designer", "codex-reviewer"):
         ag = os.path.join(CL, "agents", name + ".md")
         if not os.path.exists(ag):
             add("Codex(선택)", name, "⚠️", "없음 → 전역 재설치", "global"); continue
-        with open(ag, encoding="utf-8") as f: uses = "mcp__codex__" in f.read()
-        add("Codex(선택)", name, "✅" if uses and mcp else "⚠️",
-            "mcp__codex__* 사용" if uses and mcp else ("MCP 서버 없음 → 호출 실패, reviewer·designer로 대체됨" if uses else "tools 에 mcp__codex__codex 없음"))
+        with open(ag, encoding="utf-8") as f: uses = "codex exec" in f.read()
+        add("Codex(선택)", name, "✅" if uses and ok else "⚠️",
+            "codex exec 사용" if uses and ok else ("codex exec 없음 → 호출 실패, reviewer·designer로 대체됨" if uses else "구버전(MCP) 정의 → 전역 재설치"), None if uses else "global")
     if os.path.exists(os.path.join(CL, "agents", "codex.md")):
         add("Codex(선택)", "구 codex.md", "⚠️", "v3.0에서 codex-designer·codex-reviewer로 나뉨 → ~/.claude/agents/codex.md 삭제 (자동으로 지우지 않음)")
 

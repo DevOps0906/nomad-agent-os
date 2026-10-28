@@ -89,7 +89,7 @@
 
 ### 3.2 팀 구성
 
-v3.0: 팀장(Opus)이 6역할(팀장·공동 기획·공동 디자인·개발·독립 품질 검증·경량 보조)을 지휘한다. 기획·디자인은 Sonnet과 Codex가 초안을 나눠 쓰고, 구현은 Sonnet, 검증은 Codex가 독립적으로 맡는다. Codex 팀원 2명은 Haiku 중계자가 Codex MCP를 호출하며, Codex 모델은 `~/.codex/config.toml` 기본값을 따른다(에이전트 파일에 모델 미지정).
+v3.0: 팀장(Opus)이 6역할(팀장·공동 기획·공동 디자인·개발·독립 품질 검증·경량 보조)을 지휘한다. 기획·디자인은 Sonnet과 Codex가 초안을 나눠 쓰고, 구현은 Sonnet, 검증은 Codex가 독립적으로 맡는다. Codex 팀원 2명은 Haiku 중계자가 Codex CLI(`codex exec`)를 실행하며, Codex 모델은 `~/.codex/config.toml` 기본값을 따른다(에이전트 파일에 모델 미지정).
 
 ```mermaid
 flowchart TB
