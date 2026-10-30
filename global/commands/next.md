@@ -1,6 +1,7 @@
 ---
 description: 다음 작업 하나를 팀(멀티에이전트)으로 끝까지 진행
 ---
+SDLC 단계·산출물·공동 작업 규칙은 `~/.claude/nomad/SDLC.md`를 따른다.
 팀장으로 진행한다. 인자: $ARGUMENTS (작업 번호, 없으면 다음 대기 작업)
 
 1. `tasks/NOW.md`(있으면)와 `~/.claude/nomad/bin/delta --changed`(지난 체크포인트 이후 바뀐 파일만)로 재진입한다 — 문서를 처음부터 다시 읽지 않는다.

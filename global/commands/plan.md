@@ -1,6 +1,7 @@
 ---
 description: 기획 문서(린 검증→PRD→명세→작업 분해)를 섹션 병렬로 작성
 ---
+SDLC 단계·산출물·공동 작업 규칙은 `~/.claude/nomad/SDLC.md`를 따른다.
 `plan-docs` 스킬 절차로 진행한다. 대상: $ARGUMENTS
 
 1. 문서가 없으면 `~/.claude/nomad/bin/plan-scaffold docs --name "<제품명>"`. 있으면 `scout`로 문서 목록과 목차만 받는다.
