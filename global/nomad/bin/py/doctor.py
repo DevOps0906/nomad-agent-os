@@ -220,7 +220,7 @@ def check_security(proj):
     prd = glob.glob(os.path.join(proj, "docs", "**", "01_PRD.md"), recursive=True)
     if prd:
         t = open(prd[0], encoding="utf-8").read()
-        ok = re.search(r"##\s*8\.\s*보안", t) and re.search(r"보안 레벨\s*\|\s*(L[0-3])", t)
+        ok = re.search(r"##\s*\d+\.\s*보안", t) and re.search(r"보안 레벨\s*\|\s*(L[0-3])", t)
         add("보안", "PRD 보안 절", "✅" if ok else "⚠️", "레벨 지정됨" if ok else "PRD `## 8. 보안·공급망`의 보안 레벨 미지정 → /plan 또는 직접 작성")
     if os.path.isdir(os.path.join(proj, ".git")):
         dep = os.path.exists(os.path.join(proj, ".github", "dependabot.yml"))
