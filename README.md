@@ -85,7 +85,7 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | `/bm 제품명` | BM 7단계: 고객 · 가치 · 가격 → 단위경제 · 시나리오 → 파트 배분 → 린 검증 → 사업성 점수. 숫자는 `bm-calc`가 계산 |
 | `docmap docs/PRD.md` | 문서 목차와 장별 상태(바뀜 · 안 읽음 · 변경 없음). 읽은 뒤 `docmap --mark`로 기록 (Claude Code는 자동) |
 
-📊 **사업성은 숫자와 증거로 봅니다.** `/bm`은 공헌이익 · LTV · CAC 상한 · 손익분기 · 시나리오를 모델 추정이 아니라 `bm-calc`로 계산하고, 점수마다 증거 등급(A 실결제 ~ E 가정)을 붙여 80 · 60 · 40점 구간으로 판정합니다. 방법의 정본은 [BM-CORE `method/BM_METHOD.md`](https://github.com/theBestTrade/BM-CORE/blob/master/method/BM_METHOD.md)이고, 결과·캔버스·사업계획서 재료도 [BM-CORE](https://github.com/theBestTrade/BM-CORE)에 모읍니다.
+📊 **사업성은 숫자와 증거로 봅니다.** `/bm`은 공헌이익 · LTV · CAC 상한 · 손익분기 · 시나리오를 모델 추정이 아니라 `bm-calc`로 계산하고, 점수마다 증거 등급(A 실결제 ~ E 가정)을 붙여 80 · 60 · 40점 구간으로 판정합니다. 방법의 정본은 [BM-CORE `method/BM_METHOD.md`](https://github.com/DevOps0906/BM-CORE/blob/main/method/BM_METHOD.md)이고, 결과·캔버스·사업계획서 재료도 [BM-CORE](https://github.com/DevOps0906/BM-CORE)에 모읍니다.
 
 📖 **문서는 장 단위로 기억합니다.** 이전 세션에서 읽은 마크다운(80줄 초과)을 통째로 다시 열면 readguard 훅이 막고 목차만 줍니다. 바뀐 장과 안 읽은 장만 줄 범위로 읽으면 됩니다. 같은 요청을 한 번 더 하면 통과하고, `NOMAD_DOCGUARD=0`이면 끕니다.
 
