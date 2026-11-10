@@ -37,7 +37,7 @@ description: 사업모델(BM) 7단계 설계 — 고객·가치·가격·단위�
 ## 산출 위치
 | 환경 | 결과 문서 | 방법 정본 |
 |---|---|---|
-| 기본: BM-CORE 저장소(`D:/WorkSpace/DEV/BM-CORE`, github.com/DevOps0906/BM-CORE) | `projects/<제품>/BM.md` + `canvas.md`(캔버스 9블록) | `method/BM_METHOD.md`, 사업계획서는 `business-plan/PSST_MAPPING.md` |
+| 기본: BM-CORE 저장소(`D:/WorkSpace/DEV/BM-CORE`, github.com/DevOps0906/BM-CORE) | `docs/business/projects/<제품>/BM.md` + `canvas.md`(캔버스 9블록) | `docs/business/method/BM_METHOD.md`, 사업계획서는 `docs/business/business-plan/PSST_MAPPING.md` |
 | BM-CORE가 없는 환경 | `docs/plan/BM.md` | (이 스킬) |
 - 템플릿: `templates/bm.md`. 입력 JSON도 같은 폴더에 `bm-input.json`으로 보관해 재현 가능하게 한다.
 - 방법 정본은 한 곳에만 둔다(제품 문서에 복사 금지, 링크).
