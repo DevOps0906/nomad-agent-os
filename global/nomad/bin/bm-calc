@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+# bm-calc — BM 단위경제·BEP·시나리오·사업성 점수를 Decimal로 결정론 계산(AI 추정 금지).
+#   bm-calc <input.json> [--json]     계산 결과(Markdown 표, --json이면 JSON)
+#   bm-calc --init [파일]             예시 입력(BookForge) 생성(기본 bm-input.json)
+exec bash "$(cd "$(dirname "$0")" && pwd)/_py" bm_calc "$@"

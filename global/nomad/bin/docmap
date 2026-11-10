@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# docmap — 마크다운 문서의 장별 목차와 읽음 상태(바뀜/안 읽음/변경 없음). 세션이 바뀌어도 바뀐 장만 읽기 위한 도구(모든 AI 도구·사람용).
+#   docmap <파일...>              장별 목차
+#   docmap --mark <파일> [a-b]    읽은 범위를 기록(생략하면 전체)
+# Claude Code 안에서는 readguard 훅이 같은 일을 자동으로 한다(전에 읽은 문서를 통째로 Read 하면 목차를 전달).
+exec bash "$(cd "$(dirname "$0")" && pwd)/_py" readguard docmap "$@"

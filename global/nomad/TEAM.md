@@ -10,6 +10,7 @@
 | 파일·코드 위치 탐색, 구조 요약 | `scout` | haiku-5-5 |
 | 규칙이 한 문장인 반복 작업(추출·변환·시드·일괄 수정) | `intern` | haiku-5-5 |
 | 공동 기획: PRD·기능 명세·기술 타당성·ADR·작업 분해 | `planner` | sonnet-5-5 |
+| BM·사업성(7단계, `/bm`, 스킬 `bm-model` — 숫자는 `bm-calc`만) | `planner` | sonnet-5-5 |
 | 공동 디자인: UX·IA·흐름·와이어 초안, planner 초안 교차 검토 | `codex-designer` | Codex(gpt-6.1-sol) |
 | 디자인 토큰·DESIGN.md·화면 미리보기 | `designer` | sonnet-5-5 |
 | 구조도·흐름도·시퀀스·ERD (Mermaid) | `diagrammer` | haiku-5-5 |
@@ -46,6 +47,6 @@
 ## 모델 한도 대응: `/handoff` (대응표는 그 명령 안). 상태는 항상 `tasks/NOW.md`에. 유료 API 추가 사용은 사용자 승인 후만.
 
 ## 도구
-- `~/.claude/nomad/bin/`: `q` · `codemap` · `delta` · `plan-scaffold` · `plan2spec`(화면 표→사양) · `spec <ID>` · `handoff` · `design-preview` · `shot` · `deps2mmd` · `sql2erd` · `mmd-check` · `oss` · `token-audit` · `secscan` · `nomad-module`.
+- `~/.claude/nomad/bin/`: `q` · `codemap` · `delta` · `docmap`(문서 장별 변경) · `bm-calc` · `plan-scaffold` · `plan2spec`(화면 표→사양) · `spec <ID>` · `handoff` · `design-preview` · `shot` · `deps2mmd` · `sql2erd` · `mmd-check` · `oss` · `token-audit` · `secscan` · `nomad-module`.
 - 팀장이 이미 읽은 내용은 팀원에게 다시 읽히지 않는다: 필요한 사실은 지시에 1~3줄로, 읽을 것은 경로#장으로.
 - 상세 설계와 근거: `~/.claude/nomad/ARCHITECTURE.md` (필요할 때만 읽는다).

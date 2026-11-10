@@ -23,6 +23,7 @@ Claude Code에서 입력합니다.
 | `/agent-check` · `/agent-check fix` | 멀티에이전트 구성 점검: 전역 설치 · 프로젝트 적용 · 템플릿 미작성 · 규칙 경로 · 팀원 이름 충돌 · 모듈 · 사양 최신 · 보안 · 준비물 · 토큰 → 안전한 것은 자동 구성 |
 | `/token-audit` | 항상 읽히는 설정의 토큰 측정 |
 | `/oss 지시` | 단순 작업을 로컬 LLM(Ollama 등)에 맡김 |
+| `/bm 제품명` | BM 7단계(고객 → 가치 → 가격 → 단위경제 → 파트 배분 → 린 검증 → 사업성 점수). 숫자는 `bm-calc`가 계산 |
 | `/secure` · `/secure setup [--ci]` | 보안 점검(SBOM · 취약점 · 라이선스) / Dependabot · SECURITY.md · CI SBOM 생성 → [보안 가이드](SECURITY.md) |
 
 ---
@@ -51,6 +52,8 @@ Claude Code에서 `/agents`로 확인합니다. 팀장이 알아서 나눠 맡�
 | `q` | 긴 출력 명령 실행 → 실패 줄만 표시 | `q pnpm test` |
 | `codemap` | 파일 · 함수 목록 지도 | `codemap src` |
 | `delta` | 바뀐 줄 · 바뀐 파일만 보기 | `delta --changed` |
+| `docmap` | 마크다운 문서 목차 + 장별 상태(바뀜 · 안 읽음 · 변경 없음). 이전에 읽은 문서는 바뀐 장만 읽기 | `docmap docs/PRD.md` · `docmap --mark docs/PRD.md 40-120` |
+| `bm-calc` | BM 단위경제(공헌이익 · LTV · CAC 상한 · 손익분기) · 시나리오 · 사업성 판정 계산 | `bm-calc --init bm.json` · `bm-calc bm.json` |
 | `plan-scaffold` | 기획 문서 뼈대 8개 | `plan-scaffold docs --name 쇼핑몰` |
 | `design-preview` | 디자인 토큰 미리보기 HTML · 대비 검사 · 토큰 우회 탐지 | `design-preview tokens.css -o design/preview.html` · `--check` · `--scan src/components` |
 | `deps2mmd` | 코드 import → 구조도 | `deps2mmd src -o docs/diagrams/architecture.mmd` |
