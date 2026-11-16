@@ -38,7 +38,7 @@
 | 낮음 | 화면 문구·스타일·문서 | haiku | — | builder 자가 검증(`q`), 화면이면 codex-reviewer(design) |
 | 보통 | 기능·API·컴포넌트 | sonnet | — | codex-reviewer(code) |
 | 높음 | 결제·인증·RLS·마이그레이션·외부 계약·새 의존성·노출 면·키 권한 | opus | challenger | codex-reviewer(code) + reviewer(security/contract) → 필요 시 tester |
-- 워커(builder·tester·designer·planner·intern) 위임 시 Agent `model`을 위 표로 지정. 난이도·중요도가 높으면 한 단계 올린다. 리뷰어·challenger·advisor는 고정.
+- 워커 위임 `model`은 이 표대로(난이도·중요도 높으면 한 단계↑). 리뷰어·challenger·advisor는 고정.
 - 리뷰는 git diff와 관련 파일만. 린터·테스트로 잡히는 문제에 모델을 쓰지 않는다.
 
 ## 모델 한도 대응: `/handoff` (대응표는 그 명령 안). 유료 API 추가 사용은 사용자 승인 후만.
