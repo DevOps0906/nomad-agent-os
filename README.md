@@ -8,6 +8,38 @@ Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정 모음입니다.
 
 ---
 
+## 전반적인 구성
+
+| 영역 | 제공 내용 | 주요 파일/가이드 |
+|---|---|---|
+| 공통 규칙 | 모든 AI 도구가 같은 정본·작업 표 사용 | `global/nomad/CORE.md`, `project-template/AGENTS.md` |
+| Claude 팀 | 기획·디자인·구현·테스트·리뷰 등 역할 분담 | `global/agents/`, `global/nomad/TEAM.md` |
+| Codex 네이티브 팀 | 탐색·디자인·구현·테스트·리뷰 5역할 | [Codex 팀](docs/CODEX_TEAM.md), `project-template/.codex/agents/` |
+| 모델 구성 | 주 `gpt-6.1-sol`, 부 모델은 확인된 ID를 명시 | `nomad-os codex init <프로젝트> --worker-model <ID>` |
+| 모델 미확정 | 부 모델을 자동 대체하지 않으며 초기 상태는 비활성 | 요청 이름과 CLI/App 제공 ID를 먼저 확인 |
+| 초기화 | 기존 설정 보존, 사용자 역할 충돌 차단, 재실행 지원 | `global/nomad/bin/py/codex_team.py` |
+| 구성 검사 | TOML/5역할/모델 일치 검사; 실제 모델 가용성은 별도 | `nomad-os codex check <프로젝트>` |
+| 기획/설계 | PRD·작업 분해·화면 사양·Mermaid | [디자인](docs/DESIGN.md), `plan2spec` |
+| 품질/보안 | 테스트·리뷰·SBOM·취약점·라이선스 | [보안](docs/SECURITY.md), `secscan` |
+| 도메인 모듈 | 외부 청사진·컨테이너·보안 팩 적용 | [모듈](docs/MODULES.md), `modules.json` |
+| 설치 | 프로젝트별 템플릿 복사와 공통 도구 설치 | `install.ps1`, `install.sh` |
+| 검증 | unittest와 CI; Codex 팀 회귀 테스트 6개 추가 | `tests/test_codex_team.py`, `.github/workflows/test.yml` |
+
+### Codex 역할 표
+
+| 역할 | 소유 책임 | 제한 |
+|---|---|---|
+| 주 에이전트 | 분해·통합·최종 검증 | `gpt-6.1-sol`, 부 작업 최대 3개 |
+| nomad_scout | 구조·호출 관계 탐색 | 읽기 전용, codebase-memory 커버리지 확인 |
+| nomad_designer | 지정 화면·스타일 | 반응형·접근성, 타 파일 변경 금지 |
+| nomad_builder | 지정 기능·파일 구현 | 다른 작업자 수정 보존 |
+| nomad_tester | 지정 테스트·부정 시나리오 | 제품 수정 필요 시 팀장 보고 |
+| nomad_reviewer | 독립 diff 검토 | 읽기 전용, 재현 가능한 발견 우선 |
+
+네이티브 설정은 새 Codex 세션에서 적용합니다. 설정 파일 생성이 실제 에이전트 실행이나 모델 접근 성공을 의미하지 않습니다. 기존 sandbox/approval 정책은 유지합니다.
+
+---
+
 ## 빠른 시작
 
 설치는 PC마다 한 번, 적용은 프로젝트마다 한 번입니다.
@@ -102,7 +134,7 @@ Claude Code가 열리면 상황에 맞게 입력합니다.
 | 도구 | 실행 | 쓸 수 있는 것 |
 |---|---|---|
 | Claude Code | `claude` | 전부 (팀 · 슬래시 명령 · 토큰 절약 훅) |
-| ChatGPT Codex | `codex` | 같은 규칙 · 작업 목록 · 도구 |
+| ChatGPT Codex | `codex` | 같은 규칙 · 작업 목록 · 도구 · 네이티브 팀 5역할 |
 | Gemini CLI | `gemini` | 같은 규칙 · 작업 목록 · 도구 |
 
 설정 파일은 `init`이 자동으로 만듭니다. 자세히는 → [AI 도구 같이 쓰기](docs/MULTI_AI.md)
@@ -153,3 +185,7 @@ NOMAD를 기준으로 프로젝트의 README를 만들 때 따르는 규칙입�
 | PowerShell | Git Bash |
 |---|---|
 | `git pull; .\install.ps1` | `git pull && bash install.sh` |
+
+## Codex 네이티브 멀티에이전트
+
+주 모델은 `gpt-6.1-sol`입니다. 부 모델의 정확한 지원 ID를 확인한 뒤 `nomad-os codex init <프로젝트> --worker-model <ID>`로 탐색·디자인·구현·테스트·리뷰 역할을 만듭니다. `nomad-os codex check <프로젝트>`로 구성 일치를 검사합니다. 자세한 내용은 [Codex 팀 가이드](docs/CODEX_TEAM.md)를 따릅니다. 모델 가용성을 확인하기 전에는 활성화하지 않습니다.

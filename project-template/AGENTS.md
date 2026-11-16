@@ -21,8 +21,6 @@
 | 개발 서버 | `pnpm dev` |
 | 린트 · 타입 | `pnpm lint` · `pnpm typecheck` |
 | 테스트 | `pnpm test` · `cd apps/api && pytest -q` |
-| DB 초기화 · 타입 | `supabase db reset` · `supabase gen types typescript --local > apps/web/src/types/db.ts` |
-| ERD 갱신 | `~/.claude/nomad/bin/sql2erd supabase/migrations -o docs/diagrams/erd.mmd` |
 긴 출력 명령은 `~/.claude/nomad/bin/q <명령>`으로 실행한다.
 
 ## 4. 절대 규칙 (위반 = 리뷰 🔴)
@@ -35,16 +33,10 @@
 - <프로젝트 고유 규칙을 여기에 — 5개 이내>
 
 ## 5. 문서 지도 (필요한 장만 읽는다)
-| 문서 | 내용 |
-|---|---|
-| `docs/00_LEAN.md` | 린 검증 결과 |
-| `docs/01_PRD.md` ~ `05_DATA_MODEL.md` | 기획 · 구조 · 화면 · API · 데이터 |
-| `docs/diagrams/*.mmd` | 구조도 · 흐름도 · ERD (Mermaid) |
-| `DESIGN.md` · `apps/web/src/styles/tokens.css` | 디자인 (정답은 토큰 파일) |
-| `tasks/README.md` · `tasks/NOW.md` | 작업 표 · 현재 상태 |
+`docs/00_LEAN`(린 검증) · `01_PRD`~`05_DATA_MODEL`(기획·구조·화면·API·데이터) · `docs/diagrams/*.mmd` · `DESIGN.md`(정답은 `apps/web/src/styles/tokens.css`) · `tasks/README.md`(작업 표)·`NOW.md`(현재 상태)
 
 ## 6. 작업 방식
-작업은 `tasks/README.md`의 순서대로 하나씩. 작업 파일의 "근거"와 "하지 않을 것"을 지키고, 완료 조건을 실행으로 확인한 뒤 커밋한다.
+작업은 `tasks/README.md`의 순서대로 하나씩. 작업 표의 위험도(낮음/보통/높음)가 담당 모델(Claude: haiku/sonnet/opus)과 검증 수준을 정한다. 작업 파일의 "근거"와 "하지 않을 것"을 지키고, 완료 조건을 실행으로 확인한 뒤 커밋한다.
 커밋: `[task-NNN] 요약` + 본문(무엇을 · 확인 방법).
 
 ## 7. 영역 규칙 · 도구별 로드 (규칙 정본은 `.claude/rules/` 한 곳)
@@ -56,5 +48,11 @@
 | `supabase/**` | `.claude/rules/db.md` |
 | `docs/**` · `DESIGN.md` | `.claude/rules/docs.md` |
 - 읽지 않는 파일: `.env*` · lock 파일 · `node_modules/` · `.next/` · `dist/` · `build/` · `coverage/` (Claude는 `.claude/settings.json`, Gemini는 `.geminiignore`가 강제, ChatGPT Codex는 이 줄로 지킨다).
-- 도구별 설정: Claude Code `CLAUDE.md`·`.claude/` · ChatGPT Codex `.codex/config.toml` · Gemini CLI `.gemini/settings.json`·`.geminiignore`.
 - 새 규칙 파일을 추가하면 이 표에도 한 줄 추가한다.
+
+## 8. Codex 네이티브 팀
+- 주 모델은 gpt-6.1-sol, 부 모델은 사용자가 확인한 지원 ID로만 지정한다. 초기 설정은 비활성이다.
+- `nomad-os codex init . --worker-model <ID>` 적용 후 새 세션에서 시작하고 `nomad-os codex check .`로 검사한다.
+- nomad_scout/designer/builder/tester/reviewer, 부 작업 최대 3개·깊이 1. 소유 파일을 명시하고 타인의 변경을 되돌리지 않는다.
+- 위험도 낮음·보통은 부 모델 팀원, 높음은 주 모델이 설계 확정 후 직접 구현하거나 좁혀 맡기고 reviewer·tester 검증.
+- 설정 검사와 실제 모델 실행은 별개다. 운영 지침: NOMAD `global/nomad/CODEX_TEAM.md`.

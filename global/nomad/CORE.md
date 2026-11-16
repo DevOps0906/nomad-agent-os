@@ -19,6 +19,6 @@
 - 실행: 긴 출력 명령은 `q`(조용한 실행)로 감싼다 → 실패 줄과 요약만 본다. 전체 로그는 `.nomad/logs/`.
 - 쓰기: 문서 내용을 지시문에 붙여 넣지 않는다. **경로 + 장 번호**만 넘긴다.
 - 산출: 긴 결과는 파일로 쓰고 경로와 5줄 요약만 돌려준다.
-- 그림·생성: 그림은 Mermaid 텍스트만(SVG·draw.io XML 직접 생성 금지). 뼈대 `plan-scaffold`, 미리보기 `design-preview`, 구조도 `deps2mmd`, ERD `sql2erd` — 모델은 내용과 판단만 쓴다.
+- 그림은 Mermaid 텍스트만(SVG·draw.io XML 직접 생성 금지). 뼈대·미리보기·구조도·ERD는 도구로 만들고(`SDLC.md` 표) 모델은 내용과 판단만 쓴다.
 - 단계가 끝날 때마다 `tasks/NOW.md`(단계·담당 모델·수정 파일·테스트 상태·남은 작업)를 갱신한다(끊기면 `handoff`). 작업 하나가 끝나면 `delta --checkpoint` 후 `/clear`.
 - 도구 위치: `~/.claude/nomad/bin/` (PATH에 추가하면 이름만으로 실행).

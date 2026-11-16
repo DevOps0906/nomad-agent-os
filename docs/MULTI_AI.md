@@ -26,7 +26,8 @@ flowchart LR
 | 영역별 규칙 | ✅ 자동 | ✅ 표 보고 읽음 | ✅ 표 보고 읽음 |
 | 작업 목록 (`tasks/`) | ✅ | ✅ | ✅ |
 | 도구 (`token-audit` 등) | ✅ | ✅ | ✅ |
-| 팀 · 슬래시 명령 (`/next` 등) | ✅ | — | — |
+| 네이티브 팀 | ✅ Claude 역할 | ✅ Codex 역할 5종 | — |
+| 슬래시 명령 (`/next` 등) | ✅ | — | — |
 | 반복 읽기 차단 훅 | ✅ | — | — |
 | 실행 명령 | `claude` | `codex` | `gemini` |
 
@@ -66,3 +67,7 @@ flowchart LR
   적용이 안 되면 같은 내용을 `~/.codex/config.toml`에 넣습니다.
 - **웹 채팅**(chatgpt.com · gemini.google.com)은 파일을 직접 읽지 못합니다.
   `AGENTS.md`와 필요한 규칙 파일을 첨부해서 같은 규칙을 줍니다.
+
+## Codex 네이티브 팀
+
+주 모델 `gpt-6.1-sol`, 부 모델은 정확한 지원 ID를 확인한 뒤 지정합니다. `nomad-os codex init . --worker-model <ID>`로 5개 역할을 활성화하고 `nomad-os codex check .`로 검사합니다. 일반 init의 기본값은 부 모델 미확정 상태로 비활성이며 임의 모델 대체가 없습니다. [설정·역할·기존 설정 보존](CODEX_TEAM.md)을 참고하세요.

@@ -9,13 +9,9 @@
 | 한 줄 수정·위임 비용이 더 큰 일 · 최종 판단·승인 | 팀장 직접 | opus-5-5 |
 | 파일·코드 위치 탐색, 구조 요약 | `scout` | haiku-5-5 |
 | 규칙이 한 문장인 반복 작업(추출·변환·시드·일괄 수정) | `intern` | haiku-5-5 |
-| 공동 기획: PRD·기능 명세·기술 타당성·ADR·작업 분해 | `planner` | sonnet-5-5 |
-| BM·사업성(7단계, `/bm`, 스킬 `bm-model` — 숫자는 `bm-calc`만) | `planner` | sonnet-5-5 |
-| 공동 디자인: UX·IA·흐름·와이어 초안, planner 초안 교차 검토 | `codex-designer` | Codex(gpt-6.1-sol) |
-| 디자인 토큰·DESIGN.md·화면 미리보기 | `designer` | sonnet-5-5 |
-| 구조도·흐름도·시퀀스·ERD (Mermaid) | `diagrammer` | haiku-5-5 |
-| 구현·수정·리팩터링 (스택 스킬을 읽고 작업) | `builder` | sonnet-5-5 |
-| 테스트 작성·실행 | `tester` | sonnet-5-5 |
+| 기획·BM·UX·디자인·다이어그램 (담당·도구·품질 게이트: `SDLC.md`) | `planner` · `codex-designer` · `designer` · `diagrammer` | sonnet-5-5 · Codex · haiku-5-5 |
+| 구현·수정·리팩터링 (스택 스킬을 읽고 작업) | `builder` | 위험도별(아래 표) |
+| 테스트 작성·실행 | `tester` | 위험도별(아래 표) |
 | 독립 품질 검증 (diff 중심, mode: code·design·a11y·security) | `codex-reviewer` | Codex(sol · design·a11y=terra · 고난도=astra) |
 | 리뷰 (mode: code·contract·security·doc·design) — Codex 불가 시 대체 | `reviewer` | sonnet-5-5 |
 | 착수 전 계획 공격 (위험 작업만) | `challenger` | opus-5-5 |
@@ -37,16 +33,19 @@
 - 서로 독립적인 위임은 한 번에 병렬로 보낸다. 같은 입력에 같은 팀원을 두 번 부르지 않는다.
 
 ## 위험도별 검증 (필요한 만큼만, Codex 불가면 codex-reviewer → reviewer)
-| 위험 | 예 | 착수 전 | 변경 후 |
-|---|---|---|---|
-| 낮음 | 화면 문구·스타일·문서 | — | builder 자가 검증(`q`), 화면이면 codex-reviewer(design) |
-| 보통 | 기능·API·컴포넌트 | — | codex-reviewer(code) |
-| 높음 | 결제·인증·RLS·마이그레이션·외부 계약·새 의존성·노출 면·키 권한 | challenger | codex-reviewer(code) + reviewer(security/contract) → 필요 시 tester |
+| 위험 | 예 | 워커 model | 착수 전 | 변경 후 |
+|---|---|---|---|---|
+| 낮음 | 화면 문구·스타일·문서 | haiku | — | builder 자가 검증(`q`), 화면이면 codex-reviewer(design) |
+| 보통 | 기능·API·컴포넌트 | sonnet | — | codex-reviewer(code) |
+| 높음 | 결제·인증·RLS·마이그레이션·외부 계약·새 의존성·노출 면·키 권한 | opus | challenger | codex-reviewer(code) + reviewer(security/contract) → 필요 시 tester |
+- 워커(builder·tester·designer·planner·intern) 위임 시 Agent `model`을 위 표로 지정. 난이도·중요도가 높으면 한 단계 올린다. 리뷰어·challenger·advisor는 고정.
 - 리뷰는 git diff와 관련 파일만. 린터·테스트로 잡히는 문제에 모델을 쓰지 않는다.
 
-## 모델 한도 대응: `/handoff` (대응표는 그 명령 안). 상태는 항상 `tasks/NOW.md`에. 유료 API 추가 사용은 사용자 승인 후만.
+## 모델 한도 대응: `/handoff` (대응표는 그 명령 안). 유료 API 추가 사용은 사용자 승인 후만.
 
 ## 도구
-- `~/.claude/nomad/bin/`: `q` · `codemap` · `delta` · `docmap`(문서 장별 변경) · `bm-calc` · `plan-scaffold` · `plan2spec`(화면 표→사양) · `spec <ID>` · `handoff` · `design-preview` · `shot` · `deps2mmd` · `sql2erd` · `mmd-check` · `oss` · `token-audit` · `secscan` · `nomad-module`.
+- `~/.claude/nomad/bin/`: 기획·설계 단계 도구는 `SDLC.md` 표, 나머지는 같은 이름의 명령(`/handoff` · `/oss` · `/token-audit` · `/secure` · `/agent-check`)이 부른다.
 - 팀장이 이미 읽은 내용은 팀원에게 다시 읽히지 않는다: 필요한 사실은 지시에 1~3줄로, 읽을 것은 경로#장으로.
 - 상세 설계와 근거: `~/.claude/nomad/ARCHITECTURE.md` (필요할 때만 읽는다).
+
+- Codex가 주 에이전트일 때: `~/.claude/nomad/CODEX_TEAM.md`.

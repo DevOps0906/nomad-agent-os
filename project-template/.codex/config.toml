@@ -8,3 +8,11 @@ sandbox_mode = "workspace-write"   # 프로젝트 폴더 안에서만 쓰기
 
 # 모델을 고정하려면 주석을 풀고 작업 시점의 최신 GPT 코딩 모델 이름을 적는다.
 # model = "<모델 이름>"
+
+# NOMAD Codex team: confirm exact worker model before activation.
+model = "gpt-6.1-sol"
+
+[agents]
+enabled = false
+max_concurrent_threads_per_session = 3
+# nomad-os codex init . --worker-model <supported-model-id>

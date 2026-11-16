@@ -55,6 +55,10 @@ append_line() { # append_line <파일> <줄> : 마지막 줄바꿈을 보장하�
 }
 
 # 모듈: 기획 청사진·보안 팩을 외부 레포에서 필요할 때 가져온다 (내용은 이 저장소에 두지 않음)
+if [ "${1:-}" = "codex" ]; then
+  shift; exec bash "$SRC/global/nomad/bin/_py" codex_team "$@"
+fi
+
 if [ "${1:-}" = "module" ]; then
   shift; exec bash "$SRC/global/nomad/bin/_py" modules "$@"
 fi

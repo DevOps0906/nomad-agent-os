@@ -117,8 +117,8 @@ flowchart TB
 | 공동 기획 | planner | claude-sonnet-5-5 | 범위 한정 | 기능·데이터·타당성 초안. 스킬 프리로드 |
 | 공동 디자인 | codex-designer | Codex(config 기본) 중계: claude-haiku-5-5 | `docs/**` `design/**` `docs/diagrams/**` | UX·IA·흐름·와이어 초안 + Sonnet 초안 변경분 교차 검토. Mermaid + `mmd-check`, Figma MCP 있으면 링크 보고 |
 | 공동 디자인 | designer | claude-sonnet-5-5 | 범위 한정 | 디자인 토큰·DESIGN.md·미리보기. 스킬 프리로드 |
-| 개발 | builder | claude-sonnet-5-5 | 범위 한정 | 구현·수정·리팩터링 |
-| 개발 | tester | claude-sonnet-5-5 | 테스트 파일 | 테스트 작성·실행 |
+| 개발 | builder | 기본 claude-sonnet-5-5, 위임 시 위험도별 haiku·sonnet·opus | 범위 한정 | 구현·수정·리팩터링 |
+| 개발 | tester | 기본 claude-sonnet-5-5, 위임 시 위험도별 haiku·sonnet·opus | 테스트 파일 | 테스트 작성·실행 |
 | 독립 품질 검증 | codex-reviewer | Codex(config 기본) 중계: claude-haiku-5-5 | 없음(read-only) | `git diff` + 관련 파일만 입력. mode code·design·a11y·security. 🔴/🟡 형식, 반박 후 남은 것만 |
 | 독립 품질 검증 | reviewer | claude-sonnet-5-5 | 없음 | mode code·contract·security·doc·design. Codex 불가 시 대체 |
 | 경량 보조 | scout · intern · diagrammer | claude-haiku-5-5 | scout 없음 | scout·diagrammer는 `omitClaudeMd`(CLAUDE.md 미로드) |

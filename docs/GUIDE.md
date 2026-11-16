@@ -176,11 +176,13 @@ Codex 모델은 `~/.codex/config.toml`의 기본값을 따릅니다. Codex 팀�
 
 ### 위험도별 검증
 
-| 위험 | 예 | 착수 전 | 변경 후 |
-|---|---|---|---|
-| 낮음 | 화면 문구 · 스타일 · 문서 | — | builder 자가 검증(`q`), 화면이면 codex-reviewer(design) |
-| 보통 | 기능 · API · 컴포넌트 | — | codex-reviewer(code) |
-| 높음 | 결제 · 인증 · RLS · 마이그레이션 · 외부 계약 · 새 의존성 · 노출 면 · 키 권한 | challenger | codex-reviewer(code) + reviewer(security/contract) → 필요 시 tester |
+| 위험 | 예 | 워커 model | 착수 전 | 변경 후 |
+|---|---|---|---|---|
+| 낮음 | 화면 문구 · 스타일 · 문서 | haiku | — | builder 자가 검증(`q`), 화면이면 codex-reviewer(design) |
+| 보통 | 기능 · API · 컴포넌트 | sonnet | — | codex-reviewer(code) |
+| 높음 | 결제 · 인증 · RLS · 마이그레이션 · 외부 계약 · 새 의존성 · 노출 면 · 키 권한 | opus | challenger | codex-reviewer(code) + reviewer(security/contract) → 필요 시 tester |
+
+기획·디자인이 확정되면 작업 분해에서 모든 작업에 위험도를 지정합니다(위험·중요도·난이도 중 가장 높은 것). 그 값이 구현·테스트 워커(builder · tester · designer · planner · intern)의 model과 검증 수준을 정합니다.
 
 ---
 
