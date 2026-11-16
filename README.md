@@ -207,6 +207,24 @@ NOMAD를 기준으로 프로젝트의 README를 만들 때 따르는 규칙입�
 | `jobq run [--watch]` | `--cmd` 작업을 순서대로 실행(워커 1개가 최대 2개 병렬, 로그 `.nomad/queue/logs/`) |
 | `jobq cancel <id>` · `jobq reset <id>` | 대기 취소 / 진행 → 대기 되돌리기 |
 
+에이전트가 직접 제작하는 작업의 흐름 예시입니다.
+
+```bash
+jobq add video "제품 소개 영상"   # 바로 시작 #1
+jobq add blog  "출시 후기 글"     # 바로 시작 #2
+jobq add video "튜토리얼 영상"    # 대기 #3 순번 1
+jobq done 1                      # 완료 #1 → 다음 작업 시작 #3 (에이전트는 지시 없이 바로 #3 제작)
+```
+
+| 안전장치 | 동작 |
+|---|---|
+| 워커 1개 | OS 파일 잠금으로 보장, 워커가 죽으면 잠금 자동 해제 |
+| 중복 실행 방지 | 워커가 중단된 뒤 다시 떠도 이미 시작된 명령 작업은 다시 실행하지 않고 '실패: 워커 중단'으로 기록 |
+| 한도 유지 | 명령 작업의 실행 잠금이 실제 명령 프로세스와 함께 유지됨(Windows Job · POSIX 잠금 상속) |
+| 명령 작업 결과 | 워커만 기록 — `done`·`fail`·`reset`으로 바꿀 수 없음 |
+| 상태 파일 손상 | `content.json.corrupt-<시각>` 백업을 남기고 중단(작업 유실 없음) |
+| 남은 위험 | 명령이 스스로 데몬화해 잠금을 닫는 경우(POSIX), Windows Job 할당 실패 시 |
+
 ## 업데이트
 
 이 저장소 폴더에서 실행합니다.
@@ -214,6 +232,8 @@ NOMAD를 기준으로 프로젝트의 README를 만들 때 따르는 규칙입�
 | PowerShell | Git Bash |
 |---|---|
 | `git pull; .\install.ps1` | `git pull && bash install.sh` |
+
+ChatGPT Codex·Gemini CLI 전역 지시 파일(`~/.codex/AGENTS.md`·`~/.gemini/GEMINI.md`)에도 공통 규칙(CORE)을 넣으려면 `bash install.sh --codex --gemini`를 실행합니다. 다시 실행하면 표지(`<!-- NOMAD CORE START/END -->`) 사이만 최신 CORE로 갱신하고, 직접 쓴 내용은 그대로 둡니다(원본은 `~/.claude/.nomad-backup/`에 백업).
 
 ## Codex 네이티브 멀티에이전트
 
