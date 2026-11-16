@@ -14,6 +14,7 @@ Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정 모음입니다.
 |---|---|---|
 | 공통 규칙 | 모든 AI 도구가 같은 정본·작업 표 사용 | `global/nomad/CORE.md`, `project-template/AGENTS.md` |
 | Claude 팀 | 기획·디자인·구현·테스트·리뷰 등 역할 분담 | `global/agents/`, `global/nomad/TEAM.md` |
+| 위험도별 워커 | 작업 위험도(낮음/보통/높음)로 워커 모델·검증 수준 결정 | [아래 절](#위험도별-워커-모델), `global/nomad/TEAM.md` |
 | Codex 네이티브 팀 | 탐색·디자인·구현·테스트·리뷰 5역할 | [Codex 팀](docs/CODEX_TEAM.md), `project-template/.codex/agents/` |
 | 모델 구성 | 주 `gpt-6.1-sol`, 부 모델은 확인된 ID를 명시 | `nomad-os codex init <프로젝트> --worker-model <ID>` |
 | 모델 미확정 | 부 모델을 자동 대체하지 않으며 초기 상태는 비활성 | 요청 이름과 CLI/App 제공 ID를 먼저 확인 |
@@ -37,6 +38,20 @@ Claude Code를 **AI 개발팀**처럼 쓰게 해 주는 설정 모음입니다.
 | nomad_reviewer | 독립 diff 검토 | 읽기 전용, 재현 가능한 발견 우선 |
 
 네이티브 설정은 새 Codex 세션에서 적용합니다. 설정 파일 생성이 실제 에이전트 실행이나 모델 접근 성공을 의미하지 않습니다. 기존 sandbox/approval 정책은 유지합니다.
+
+## 위험도별 워커 모델
+
+기획(작업 분해)이나 디자인이 확정되면 개발 작업마다 **위험·중요도·난이도 중 가장 높은 것**으로 위험도를 정해 `tasks/README.md` 표의 위험도 열에 적습니다. 위험도가 없는 작업은 착수하지 않습니다(기준: `plan-docs` 5번).
+
+| 위험도 | 예 | Claude 워커 model | Codex | 착수 전 | 변경 후 검증 |
+|---|---|---|---|---|---|
+| 낮음 | 화면 문구·스타일·문서, 토큰만 바꾸는 화면 | `haiku` | 부 모델 팀원 | — | 자가 검증, 화면이면 design 리뷰 |
+| 보통 | 기능·API·컴포넌트, 상태·데이터가 붙는 화면 | `sonnet` | 부 모델 팀원 + nomad_reviewer | — | code 리뷰 |
+| 높음 | 결제·인증·RLS·마이그레이션·외부 계약·새 의존성·노출 면·키 권한 | `opus` | 주 모델이 설계 확정 후 직접 또는 좁혀 위임 | challenger | code + security/contract 리뷰 → 필요 시 tester |
+
+- 난이도·중요도가 높으면 한 단계 올립니다. 리뷰어·challenger·advisor 모델은 고정입니다.
+- 멀티에이전트(Workflow `agent(..., {model})`·병렬 Agent 위임)에서도 워커 model을 반드시 적습니다. 생략해서 팀장 모델을 그대로 물려받지 않습니다.
+- 정본: `global/nomad/TEAM.md`(Claude), `global/nomad/CODEX_TEAM.md`(Codex), `project-template/AGENTS.md`(공통). 다른 PC·도구에는 `install.sh`(`--codex`·`--gemini`)로 적용합니다.
 
 ---
 
