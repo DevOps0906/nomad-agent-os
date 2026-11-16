@@ -10,4 +10,5 @@ description: 디자인 시스템을 토큰 중심으로 만들거나 수정(반�
 4. 검사(스크립트): `design-preview <tokens> --check --scan <컴포넌트 폴더>`(대비·토큰 우회) → `plan2spec`(토큰이 바뀌면 시안 전체 갱신) →
    `shot design/wireframes`(375·768·1280·1440 스크린샷). ❌는 토큰 값만 고쳐 다시 실행.
 5. 사용자가 `design/preview.html`과 `design/wireframes/index.html`을 보고 확정할 때까지 화면 구현 작업을 시작하지 않는다.
-6. 수정 요청은 토큰 diff로만 반영한다(화면 코드 재작성 금지). 구현된 화면은 `codex-reviewer`(mode=design, 불가 시 `reviewer`)가 `shot <URL>`로 확인한다.
+6. 확정되면 화면 구현 작업(`tasks/task-NNN.md`)을 만들거나 갱신하고, 작업마다 위험도(낮음/보통/높음 → 워커 model haiku/sonnet/opus, 기준 `plan-docs` 5번)를 지정해 `tasks/README.md` 표에 적는다. 토큰·문구·스타일만이면 낮음, 상태·데이터가 붙는 화면은 보통, 인증·결제·권한 화면은 높음.
+7. 수정 요청은 토큰 diff로만 반영한다(화면 코드 재작성 금지). 구현된 화면은 `codex-reviewer`(mode=design, 불가 시 `reviewer`)가 `shot <URL>`로 확인한다.

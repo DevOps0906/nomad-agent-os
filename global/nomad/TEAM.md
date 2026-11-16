@@ -39,6 +39,8 @@
 | 보통 | 기능·API·컴포넌트 | sonnet | — | codex-reviewer(code) |
 | 높음 | 결제·인증·RLS·마이그레이션·외부 계약·새 의존성·노출 면·키 권한 | opus | challenger | codex-reviewer(code) + reviewer(security/contract) → 필요 시 tester |
 - 워커 위임 `model`은 이 표대로(난이도·중요도 높으면 한 단계↑). 리뷰어·challenger·advisor는 고정.
+- 같은 규칙을 멀티에이전트(Workflow 스크립트 `agent(..., {model})`·병렬 Agent 위임)에도 적용한다: 워커 단계는 작업 위험도의 model(낮음 `haiku` · 보통 `sonnet` · 높음 `opus`)을 반드시 명시하고, 생략해 팀장 모델을 상속시키지 않는다.
+- 기획(작업 분해)이나 디자인이 확정되면 개발 작업마다 위험도를 **위험·중요도·난이도 중 가장 높은 것**으로 낮음/보통/높음 지정하고 `tasks/README.md` 표 위험도 열에 적는다(기준: `plan-docs` 5번). 위험도 없는 작업은 착수하지 않는다.
 - 리뷰는 git diff와 관련 파일만. 린터·테스트로 잡히는 문제에 모델을 쓰지 않는다.
 
 ## 모델 한도 대응: `/handoff` (대응표는 그 명령 안). 유료 API 추가 사용은 사용자 승인 후만.
