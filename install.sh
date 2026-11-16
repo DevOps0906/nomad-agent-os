@@ -156,8 +156,34 @@ fi
 # 5) 다른 AI 도구 전역 지시 파일에 CORE 추가 (선택): --codex = ChatGPT Codex, --gemini = Gemini CLI
 add_core() { # add_core <전역 지시 파일> <도구 이름>
   mkdir -p "$(dirname "$1")"
-  if grep -q "NOMAD CORE" "$1" 2>/dev/null; then echo "  · 유지  $1 ($2, CORE 있음)"
-  else { [ -s "$1" ] && echo; cat "$CL/nomad/CORE.md"; } >> "$1"; echo "  + $2 전역 지시 파일에 CORE 규칙 추가 ($1)"; fi
+  local r; r=$($PY -c 'import sys, re, shutil, os
+f, core, bk = sys.argv[1:4]
+S, E = "<!-- NOMAD CORE START -->", "<!-- NOMAD CORE END -->"
+old = open(f, encoding="utf-8", newline="").read() if os.path.isfile(f) else ""
+blk = S + "\n" + open(core, encoding="utf-8", newline="").read().replace("\r\n", "\n").strip("\n") + "\n" + E
+s, e = old.find(S), old.find(E)
+if s >= 0 and e > s:
+    new, mode = old[:s] + blk + old[e + len(E):], "upd"
+else:
+    m = re.search(r"^# NOMAD CORE.*$", old, re.M)
+    if m:
+        n = re.search(r"^# .*$", old[m.end():], re.M)
+        tail = old[m.end() + n.start():] if n else ""
+        new, mode = old[:m.start()] + blk + ("\n\n" + tail if tail else "\n"), "upd"
+    else:
+        new, mode = old + (("" if old.endswith("\n") else "\n") + "\n" if old else "") + blk + "\n", "add"
+if new == old:
+    print("keep")
+else:
+    if old:
+        os.makedirs(bk, exist_ok=True); shutil.copy(f, os.path.join(bk, os.path.basename(os.path.dirname(f)).lstrip(".") + "-" + os.path.basename(f)))
+    open(f, "w", encoding="utf-8", newline="").write(new)
+    print(mode)' "$1" "$CL/nomad/CORE.md" "$BK") || { echo "  ⚠️ $2 CORE 갱신 실패 ($1)"; return 0; }
+  case "$r" in
+    keep) echo "  · 유지  $1 ($2, CORE 최신)" ;;
+    upd) echo "  ↻ 갱신  $1 ($2, CORE 규칙)" ;;
+    *) echo "  + $2 전역 지시 파일에 CORE 규칙 추가 ($1)" ;;
+  esac
 }
 [[ " $* " == *" --codex "* ]] && add_core "$HOME/.codex/AGENTS.md" "ChatGPT Codex"
 [[ " $* " == *" --gemini "* ]] && add_core "$HOME/.gemini/GEMINI.md" "Gemini CLI"
